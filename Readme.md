@@ -1,7 +1,7 @@
 # Личный проект «Шесть городов»
 
 * Студент: [Дмитрий Корбут](https://up.htmlacademy.ru/nodejs-api-individual/2/user/1281179).
-* Наставник: `Неизвестно`.
+* Наставник: [Владислав Поклонский](https://htmlacademy.ru/profile/id2210683).
 
 ---
 
