@@ -22,5 +22,3 @@ export class HelpCommand implements Command {
     `);
   }
 }
-
-new HelpCommand().execute();
