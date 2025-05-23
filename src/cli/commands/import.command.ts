@@ -9,7 +9,7 @@ export class ImportCommand implements Command {
   }
 
   public async execute(...params: string[]): Promise<void> {
-    const [filePath] = params[0];
+    const [filePath] = params;
     const fileReader = new TsvFileReader(filePath.trim());
     try {
       fileReader.read();
