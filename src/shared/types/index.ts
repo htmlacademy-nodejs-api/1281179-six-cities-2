@@ -1,3 +1,3 @@
 export type {Offer} from './offer.type.js';
-export type {Property} from './property.type.js';
-export type {Convenience} from './conveniences.type.js';
+export {Property} from './property.type.js';
+export {Convenience} from './conveniences.type.js';
