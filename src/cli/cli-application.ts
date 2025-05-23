@@ -28,12 +28,11 @@ export class CLIApplication {
 
   public processCommand(params: string[]): void {
     const parsedCommands = CommandParser.parse(params);
-    const commandNames = Object.keys(parsedCommands);
-    commandNames.forEach((commandName) => {
-      const command = this.getCommand(commandName);
-      const commandParams = parsedCommands[commandName] || [];
-      command.execute(...commandParams);
-    });
+    const commandName = Object.keys(parsedCommands)[0];
+
+    const command = this.getCommand(commandName);
+    const commandParams = parsedCommands[commandName] || [];
+    command.execute(...commandParams);
   }
 
   private getDefaultCommand(): never | Command {
