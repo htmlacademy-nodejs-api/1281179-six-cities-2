@@ -10,16 +10,12 @@ GET http://localhost:3123/userById/1
 GET http://localhost:3123/offers
 
 ###
-### GET a specific offer by ID
-GET http://localhost:3123/offers/1
-
-###
 ### GET all cities for mocks
 GET http://localhost:3123/cityById
 
 ###
 ### GET a specific city by ID
-GET http://localhost:3123/cityById/1
+GET http://localhost:3123/cityById/Paris
 
 ###
 ### GET all property types for mocks
