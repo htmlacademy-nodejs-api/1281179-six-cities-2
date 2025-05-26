@@ -44,8 +44,8 @@
       "Современная квартира с шкафом для одежды, обеспечивает удобное хранение вещей."
     ]
   },
-  "users": [
-    {
+  "userById": {
+    "1": {
       "id": 1,
       "name": "Анна",
       "email": "anna@example.com",
@@ -53,7 +53,7 @@
       "password": "secure123",
       "userType": "default"
     },
-    {
+    "2": {
       "id": 2,
       "name": "Иван",
       "email": "ivan@example.com",
@@ -61,7 +61,7 @@
       "password": "pass456",
       "userType": "pro"
     },
-    {
+    "3": {
       "id": 3,
       "name": "Мария",
       "email": "maria@example.com",
@@ -69,7 +69,7 @@
       "password": "qwerty789",
       "userType": "default"
     },
-    {
+    "4": {
       "id": 4,
       "name": "Петр",
       "email": "petr@example.com",
@@ -77,7 +77,7 @@
       "password": "abc123",
       "userType": "pro"
     },
-    {
+    "5": {
       "id": 5,
       "name": "Света",
       "email": "sveta@example.com",
@@ -85,7 +85,7 @@
       "password": "def456",
       "userType": "default"
     },
-    {
+    "6": {
       "id": 6,
       "name": "Дмитрий",
       "email": "dmitry@example.com",
@@ -93,7 +93,7 @@
       "password": "ghi789",
       "userType": "pro"
     },
-    {
+    "7": {
       "id": 7,
       "name": "Елена",
       "email": "elena@example.com",
@@ -101,7 +101,7 @@
       "password": "jkl123",
       "userType": "default"
     },
-    {
+    "8": {
       "id": 8,
       "name": "Алексей",
       "email": "aleksey@example.com",
@@ -109,7 +109,7 @@
       "password": "mno456",
       "userType": "pro"
     },
-    {
+    "9": {
       "id": 9,
       "name": "Ольга",
       "email": "olga@example.com",
@@ -117,7 +117,7 @@
       "password": "pqr789",
       "userType": "default"
     },
-    {
+    "10": {
       "id": 10,
       "name": "Сергей",
       "email": "sergey@example.com",
@@ -125,7 +125,7 @@
       "password": "stu123",
       "userType": "pro"
     },
-    {
+    "11": {
       "id": 11,
       "name": "Наталья",
       "email": "natalya@example.com",
@@ -133,7 +133,7 @@
       "password": "vwx456",
       "userType": "default"
     },
-    {
+    "12": {
       "id": 12,
       "name": "Александр",
       "email": "alexandr@example.com",
@@ -141,7 +141,7 @@
       "password": "yz123",
       "userType": "pro"
     },
-    {
+    "13": {
       "id": 13,
       "name": "Татьяна",
       "email": "tatiana@example.com",
@@ -149,7 +149,7 @@
       "password": "abc456",
       "userType": "default"
     },
-    {
+    "14": {
       "id": 14,
       "name": "Игорь",
       "email": "igor@example.com",
@@ -157,13 +157,100 @@
       "password": "def789",
       "userType": "pro"
     },
-    {
+    "15": {
       "id": 15,
       "name": "Юлия",
       "email": "yulia@example.com",
       "photo": "https://example.com/yulia.jpg",
       "password": "ghi123",
       "userType": "default"
+    }
+  },
+  "cityById": [
+    {
+      "id": 1,
+      "name": "Paris",
+      "coords": {
+        "latitude": 48.85661,
+        "longitude": 2.351499
+      }
+    },
+    {
+      "id": 2,
+      "name": "Cologne",
+      "coords": {
+        "latitude": 50.938361,
+        "longitude": 6.959974
+      }
+    },
+    {
+      "id": 3,
+      "name": "Brussels",
+      "coords": {
+        "latitude": 50.846557,
+        "longitude": 4.351697
+      }
+    },
+    {
+      "id": 4,
+      "name": "Amsterdam",
+      "coords": {
+        "latitude": 52.370216,
+        "longitude": 4.895168
+      }
+    },
+    {
+      "id": 5,
+      "name": "Hamburg",
+      "coords": {
+        "latitude": 53.550341,
+        "longitude": 10.000654
+      }
+    },
+    {
+      "id": 6,
+      "name": "Dusseldorf",
+      "coords": {
+        "latitude": 51.2254021,
+        "longitude": 51.225402
+      }
+    }
+  ],
+  "propertyTypes": [
+    {
+      "name": "apartment"
+    },
+    {
+      "name": "house"
+    },
+    {
+      "name": "room"
+    },
+    {
+      "name": "hotel"
+    }
+  ],
+  "conveniences": [
+    {
+      "name": "Breakfast"
+    },
+    {
+      "name": "Air conditioning"
+    },
+    {
+      "name": "Laptop friendly workspace"
+    },
+    {
+      "name": "Baby seat"
+    },
+    {
+      "name": "Washer"
+    },
+    {
+      "name": "Towels"
+    },
+    {
+      "name": "Fridge"
     }
   ]
 }

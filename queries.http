@@ -1,0 +1,32 @@
+### GET all users for mocks
+GET http://localhost:3123/userById
+
+###
+### GET a specific user by ID
+GET http://localhost:3123/userById/1
+
+###
+### GET all offers for mocks
+GET http://localhost:3123/offers
+
+###
+### GET a specific offer by ID
+GET http://localhost:3123/offers/1
+
+###
+### GET all cities for mocks
+GET http://localhost:3123/cityById
+
+###
+### GET a specific city by ID
+GET http://localhost:3123/cityById/1
+
+###
+### GET all property types for mocks
+GET http://localhost:3123/propertyTypes
+
+###
+### GET all conveniences for mocks
+GET http://localhost:3123/conveniences
+
+###
