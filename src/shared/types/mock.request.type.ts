@@ -1,5 +1,7 @@
 import {UserType} from './user.type.js';
-import {Cities} from './cities.enum.js';
+import {City} from './city.type.js';
+import {Property} from './property.type.js';
+import {Convenience} from './conveniences.type.js';
 
 export type OffersRequestType = {
   names: string[];
@@ -15,11 +17,19 @@ export type UserByIdRequestType = {
   userType: UserType;
 }
 
-export type CityRequestType = {
-  id: string;
-  name: Cities;
-  coords: {
-    latitude: number;
-    longitude: number;
-  };
+export type PropertyType = {
+  id: number,
+  name: Property
 }
+
+export type Conveniences = {
+  id: number,
+  name: Convenience
+}
+
+export type MockServerDataRequestType = {
+  users: UserByIdRequestType[];
+  cities: City[];
+  propertyTypes: PropertyType[];
+  conveniences: Conveniences[]
+} & OffersRequestType

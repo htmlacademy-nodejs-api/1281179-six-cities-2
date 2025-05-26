@@ -1,6 +1,6 @@
 import {FileReader} from './file-reader.interface.js';
 import {readFileSync} from 'node:fs';
-import {Convenience, Offer, Property} from '../types/index.js';
+import {Cities, Convenience, Offer, Property} from '../types/index.js';
 
 export class TsvFileReader implements FileReader {
   private rawData = '';
@@ -45,7 +45,7 @@ export class TsvFileReader implements FileReader {
         name,
         description,
         publicationDate,
-        city,
+        city: city as Cities,
         previewImage,
         photos: photos.split(';'),
         isPremium: JSON.parse(isPremium),
@@ -56,7 +56,7 @@ export class TsvFileReader implements FileReader {
         guestCount: Number(guestCount),
         cost: Number(cost),
         conveniences: conveniences.split(';') as Convenience[],
-        author,
+        author: Number(author),
         commentCount: Number(commentCount),
         coordinates: coordinates.split(';').map(Number) as [number, number],
       }));
