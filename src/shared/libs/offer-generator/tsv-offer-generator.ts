@@ -19,10 +19,14 @@ const MAX_GUEST_COUNT = 10;
 
 export class TsvOfferGenerator implements OfferGenerator {
 
-  constructor(private readonly mockData: MockServerDataRequestType) {
+  constructor(private readonly mockData?: MockServerDataRequestType) {
   }
 
   public generate(): string {
+    if (!this.mockData) {
+      throw new Error('MockData is undefined');
+    }
+
     const currentDate = new Date();
     const publicationDate = new Date(currentDate.setDate(currentDate.getDate() - generateRandomValue(MIN_OFFER_DAYS, MAX_OFFER_DAYS))).toISOString();
     const city = getRandomItem(this.mockData.cities);
