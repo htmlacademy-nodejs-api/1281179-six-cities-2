@@ -8,8 +8,8 @@ import {
   UserByIdRequestType
 } from '../../shared/types/index.js';
 import got from 'got';
-import {TsvOfferGenerator} from '../../shared/libs/offer-generator/tsv-offer-generator.js';
-import {appendFile} from 'node:fs/promises';
+import {TsvOfferGenerator} from '../../shared/libs/offer-generator/index.js';
+import {TsvFileWriter} from '../../shared/libs/file-writer/index.js';
 
 export class GenerateCommand implements Command {
   private initialData?: MockServerDataRequestType;
@@ -64,8 +64,9 @@ export class GenerateCommand implements Command {
 
   private async write(filePath: string, count: number) {
     const tsvOfferGenerator = new TsvOfferGenerator(this.initialData);
+    const tsvFileWriter = new TsvFileWriter(filePath);
     for (let i = 0; i < count; i++) {
-      await appendFile(filePath, `${tsvOfferGenerator.generate()}\n`, 'utf-8');
+      void tsvFileWriter.write(tsvOfferGenerator.generate());
     }
   }
 }
