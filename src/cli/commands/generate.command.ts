@@ -7,9 +7,9 @@ import {
   PropertyType,
   UserByIdRequestType
 } from '../../shared/types/index.js';
-import got from 'got';
 import {TsvOfferGenerator} from '../../shared/libs/offer-generator/index.js';
 import {TsvFileWriter} from '../../shared/libs/file-writer/index.js';
+import {fetchJSON} from '../../shared/libs/api/index.js';
 
 export class GenerateCommand implements Command {
   private initialData?: MockServerDataRequestType;
@@ -22,11 +22,11 @@ export class GenerateCommand implements Command {
   public async load(url: string) {
     try {
       this.initialData = await Promise.all([
-        got.get(`${url}/offers`).json<OffersRequestType>(),
-        got.get(`${url}/userById`).json<UserByIdRequestType[]>(),
-        got.get(`${url}/cityById`).json<City[]>(),
-        got.get(`${url}/propertyTypes`).json<PropertyType[]>(),
-        got.get(`${url}/conveniences`).json<Conveniences[]>(),
+        fetchJSON<OffersRequestType>(`${url}/offers`),
+        fetchJSON<UserByIdRequestType[]>(`${url}/userById`),
+        fetchJSON<City[]>(`${url}/cityById`),
+        fetchJSON<PropertyType[]>(`${url}/propertyTypes`),
+        fetchJSON<Conveniences[]>(`${url}/conveniences`),
       ])
         .then((values) => {
           const [

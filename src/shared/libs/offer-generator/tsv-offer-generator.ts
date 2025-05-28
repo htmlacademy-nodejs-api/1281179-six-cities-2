@@ -2,22 +2,21 @@ import {OfferGenerator} from './offer-generator.interface.js';
 import {MockServerDataRequestType} from '../../types/index.js';
 import {generateRandomValue, getRandomItem, getRandomItems} from '../../helpers/index.js';
 
-const MIN_OFFER_DAYS = 0;
-const MAX_OFFER_DAYS = 15;
-
-const MIN_RATING = 1;
-const MAX_RATING = 5;
-
-const MIN_COST = 100;
-const MAX_COST = 100_000;
-
-const MIN_ROOM_COUNT = 1;
-const MAX_ROOM_COUNT = 8;
-
-const MIN_GUEST_COUNT = 1;
-const MAX_GUEST_COUNT = 10;
-
 export class TsvOfferGenerator implements OfferGenerator {
+  private readonly MIN_OFFER_DAYS = 0;
+  private readonly MAX_OFFER_DAYS = 15;
+
+  private readonly MIN_RATING = 1;
+  private readonly MAX_RATING = 5;
+
+  private readonly MIN_COST = 100;
+  private readonly MAX_COST = 100_000;
+
+  private readonly MIN_ROOM_COUNT = 1;
+  private readonly MAX_ROOM_COUNT = 8;
+
+  private readonly MIN_GUEST_COUNT = 1;
+  private readonly MAX_GUEST_COUNT = 10;
 
   constructor(private readonly mockData?: MockServerDataRequestType) {
   }
@@ -28,7 +27,7 @@ export class TsvOfferGenerator implements OfferGenerator {
     }
 
     const currentDate = new Date();
-    const publicationDate = new Date(currentDate.setDate(currentDate.getDate() - generateRandomValue(MIN_OFFER_DAYS, MAX_OFFER_DAYS))).toISOString();
+    const publicationDate = new Date(currentDate.setDate(currentDate.getDate() - generateRandomValue(this.MIN_OFFER_DAYS, this.MAX_OFFER_DAYS))).toISOString();
     const city = getRandomItem(this.mockData.cities);
     const offer = {
       name: getRandomItem(this.mockData.names),
@@ -46,11 +45,11 @@ export class TsvOfferGenerator implements OfferGenerator {
       ].join(';'),
       isPremium: getRandomItem([true, false]),
       isFavorite: getRandomItem([true, false]),
-      rating: generateRandomValue(MIN_RATING, MAX_RATING, 1),
+      rating: generateRandomValue(this.MIN_RATING, this.MAX_RATING, 1),
       type: getRandomItem(this.mockData.propertyTypes).name,
-      roomCount: generateRandomValue(MIN_ROOM_COUNT, MAX_ROOM_COUNT),
-      guestCount: generateRandomValue(MIN_GUEST_COUNT, MAX_GUEST_COUNT),
-      cost: generateRandomValue(MIN_COST, MAX_COST),
+      roomCount: generateRandomValue(this.MIN_ROOM_COUNT, this.MAX_ROOM_COUNT),
+      guestCount: generateRandomValue(this.MIN_GUEST_COUNT, this.MAX_GUEST_COUNT),
+      cost: generateRandomValue(this.MIN_COST, this.MAX_COST),
       conveniences: getRandomItems(this.mockData.conveniences.map((el) => el.name)).join(';'),
       author: getRandomItem(this.mockData.users).id,
       commentCount: generateRandomValue(0, 100),
