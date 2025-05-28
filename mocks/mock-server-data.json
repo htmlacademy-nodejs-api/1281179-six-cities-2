@@ -1,0 +1,267 @@
+{
+  "offers": {
+    "names": [
+      "Просторная двухместная квартира в центре города",
+      "Комфортная студия с видом на парк",
+      "Уютный трехместный апартамент в новом жилом комплексе",
+      "Прекрасная двухместная квартира с балконом",
+      "Современная квартира в историческом центре",
+      "Комфортная двухместная квартира с кухней",
+      "Просторная квартира с террасой",
+      "Уютная квартира с видом на реку",
+      "Комфортная двухместная квартира с парковкой",
+      "Современная квартира с кондиционером",
+      "Комфортная двухместная квартира с телевизором",
+      "Просторная квартира с шкафом",
+      "Уютная квартира с видом на город",
+      "Комфортная двухместная квартира с интернетом",
+      "Современная квартира с кухонным столом",
+      "Просторная квартира с диваном",
+      "Уютная квартира с видом на море",
+      "Комфортная двухместная квартира с раковиной",
+      "Современная квартира с шкафом для одежды",
+      "Просторная квартира с кухонной мебелью"
+    ],
+    "descriptions": [
+      "Просторная двухместная квартира в центре города с полностью меблированной кухней и современной отделкой.",
+      "Комфортная студия с видом на парк, оснащена всем необходимым для комфортного проживания.",
+      "Уютный трехместный апартамент в новом жилом комплексе с собственной парковкой и современной мебелью.",
+      "Прекрасная двухместная квартира с балконом, где можно насладиться видом на город.",
+      "Современная квартира в историческом центре с уникальным дизайном и всем необходимым удобствами.",
+      "Комфортная двухместная квартира с кухней, оборудованной всем необходимым для приготовления пищи.",
+      "Просторная квартира с террасой, идеальная для тех, кто любит проводить время на свежем воздухе.",
+      "Уютная квартира с видом на реку, оснащена всем необходимым для комфортного проживания.",
+      "Комфортная двухместная квартира с парковкой, расположена в тихом районе города.",
+      "Современная квартира с кондиционером, обеспечивает комфорт в любое время года.",
+      "Комфортная двухместная квартира с телевизором, оборудована всем необходимым для развлечений.",
+      "Просторная квартира с шкафом, где можно удобно хранить вещи.",
+      "Уютная квартира с видом на город, оснащена всем необходимым для комфортного проживания.",
+      "Комфортная двухместная квартира с интернетом, обеспечивает быстрый доступ в интернет.",
+      "Современная квартира с кухонным столом, оборудована всем необходимым для приготовления пищи.",
+      "Просторная квартира с диваном, идеальная для тех, кто любит проводить время дома.",
+      "Уютная квартира с видом на море, оснащена всем необходимым для комфортного отдыха.",
+      "Комфортная двухместная квартира с раковиной, оборудована всем необходимым для приготовления пищи.",
+      "Современная квартира с шкафом для одежды, обеспечивает удобное хранение вещей."
+    ]
+  },
+  "userById": [
+    {
+      "id": 1,
+      "name": "Анна",
+      "email": "anna@example.com",
+      "photo": "https://example.com/anna.jpg",
+      "password": "secure123",
+      "userType": "default"
+    },
+    {
+      "id": 2,
+      "name": "Иван",
+      "email": "ivan@example.com",
+      "photo": "https://example.com/ivan.jpg",
+      "password": "pass456",
+      "userType": "pro"
+    },
+    {
+      "id": 3,
+      "name": "Мария",
+      "email": "maria@example.com",
+      "photo": "https://example.com/maria.jpg",
+      "password": "qwerty789",
+      "userType": "default"
+    },
+    {
+      "id": 4,
+      "name": "Петр",
+      "email": "petr@example.com",
+      "photo": "https://example.com/petr.jpg",
+      "password": "abc123",
+      "userType": "pro"
+    },
+    {
+      "id": 5,
+      "name": "Света",
+      "email": "sveta@example.com",
+      "photo": "https://example.com/sveta.jpg",
+      "password": "def456",
+      "userType": "default"
+    },
+    {
+      "id": 6,
+      "name": "Дмитрий",
+      "email": "dmitry@example.com",
+      "photo": "https://example.com/dmitry.jpg",
+      "password": "ghi789",
+      "userType": "pro"
+    },
+    {
+      "id": 7,
+      "name": "Елена",
+      "email": "elena@example.com",
+      "photo": "https://example.com/elena.jpg",
+      "password": "jkl123",
+      "userType": "default"
+    },
+    {
+      "id": 8,
+      "name": "Алексей",
+      "email": "aleksey@example.com",
+      "photo": "https://example.com/aleksey.jpg",
+      "password": "mno456",
+      "userType": "pro"
+    },
+    {
+      "id": 9,
+      "name": "Ольга",
+      "email": "olga@example.com",
+      "photo": "https://example.com/olga.jpg",
+      "password": "pqr789",
+      "userType": "default"
+    },
+    {
+      "id": 10,
+      "name": "Сергей",
+      "email": "sergey@example.com",
+      "photo": "https://example.com/sergey.jpg",
+      "password": "stu123",
+      "userType": "pro"
+    },
+    {
+      "id": 11,
+      "name": "Наталья",
+      "email": "natalya@example.com",
+      "photo": "https://example.com/natalya.jpg",
+      "password": "vwx456",
+      "userType": "default"
+    },
+    {
+      "id": 12,
+      "name": "Александр",
+      "email": "alexandr@example.com",
+      "photo": "https://example.com/alexandr.jpg",
+      "password": "yz123",
+      "userType": "pro"
+    },
+    {
+      "id": 13,
+      "name": "Татьяна",
+      "email": "tatiana@example.com",
+      "photo": "https://example.com/tatiana.jpg",
+      "password": "abc456",
+      "userType": "default"
+    },
+    {
+      "id": 14,
+      "name": "Игорь",
+      "email": "igor@example.com",
+      "photo": "https://example.com/igor.jpg",
+      "password": "def789",
+      "userType": "pro"
+    },
+    {
+      "id": 15,
+      "name": "Юлия",
+      "email": "yulia@example.com",
+      "photo": "https://example.com/yulia.jpg",
+      "password": "ghi123",
+      "userType": "default"
+    }
+  ],
+  "cityById": [
+    {
+      "id": "paris",
+      "name": "Paris",
+      "coords": {
+        "latitude": 48.85661,
+        "longitude": 2.351499
+      }
+    },
+    {
+      "id": "cologne",
+      "name": "Cologne",
+      "coords": {
+        "latitude": 50.938361,
+        "longitude": 6.959974
+      }
+    },
+    {
+      "id": "brussels",
+      "name": "Brussels",
+      "coords": {
+        "latitude": 50.846557,
+        "longitude": 4.351697
+      }
+    },
+    {
+      "id": "amsterdam",
+      "name": "Amsterdam",
+      "coords": {
+        "latitude": 52.370216,
+        "longitude": 4.895168
+      }
+    },
+    {
+      "id": "hamburg",
+      "name": "Hamburg",
+      "coords": {
+        "latitude": 53.550341,
+        "longitude": 10.000654
+      }
+    },
+    {
+      "id": "dusseldorf",
+      "name": "Dusseldorf",
+      "coords": {
+        "latitude": 51.2254021,
+        "longitude": 51.225402
+      }
+    }
+  ],
+  "propertyTypes": [
+    {
+      "id": 1,
+      "name": "apartment"
+    },
+    {
+      "id": 2,
+      "name": "house"
+    },
+    {
+      "id": 3,
+      "name": "room"
+    },
+    {
+      "id": 4,
+      "name": "hotel"
+    }
+  ],
+  "conveniences": [
+    {
+      "id": 1,
+      "name": "Breakfast"
+    },
+    {
+      "id": 2,
+      "name": "Air conditioning"
+    },
+    {
+      "id": 3,
+      "name": "Laptop friendly workspace"
+    },
+    {
+      "id": 4,
+      "name": "Baby seat"
+    },
+    {
+      "id": 5,
+      "name": "Washer"
+    },
+    {
+      "id": 6,
+      "name": "Towels"
+    },
+    {
+      "id": 7,
+      "name": "Fridge"
+    }
+  ]
+}
