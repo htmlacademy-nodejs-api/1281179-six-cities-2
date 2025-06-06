@@ -6,10 +6,10 @@ import {
   OffersRequestType,
   PropertyType,
   UserByIdRequestType
-} from '../../shared/types/index.js';
-import {TsvOfferGenerator} from '../../shared/libs/offer-generator/index.js';
-import {TsvFileWriter} from '../../shared/libs/file-writer/index.js';
-import {fetchJSON} from '../../shared/libs/api/index.js';
+} from '../../../shared/types/index.js';
+import {TsvOfferGenerator} from '../../../shared/libs/offer-generator/index.js';
+import {TsvFileWriter} from '../../../shared/libs/file-writer/index.js';
+import {fetchJSON} from '../../../shared/libs/api/index.js';
 
 export class GenerateCommand implements Command {
   private initialData?: MockServerDataRequestType;
