@@ -16,10 +16,21 @@ export class PinoLogger implements Logger {
     // Получаем путь к файлу логов
     const destination = resolve(__dirName, '../../../../', 'logs/app.log');
     const pinoTransport = transport({
-      target: 'pino/file',
-      options: {
-        destination
-      }
+      targets: [
+        {
+          target: 'pino/file',
+          options: {
+            destination
+          },
+          level: 'info'
+        },
+        {
+          target: 'pino/file',
+          level: 'info',
+          options: {},
+        }
+      ]
+
     });
 
     this.logger = pino({}, pinoTransport);
