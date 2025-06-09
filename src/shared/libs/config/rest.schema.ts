@@ -1,6 +1,6 @@
 import convict from 'convict';
 
-type RestSchema = {
+export type RestSchema = {
   PORT: string;
 }
 
