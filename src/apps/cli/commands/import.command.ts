@@ -1,7 +1,7 @@
 import {Command} from './command.interface.js';
-import {TsvFileReader} from '../../shared/libs/tsv-file-reader.js';
-import {createOffer} from '../../shared/helpers/index.js';
-import {Offer} from '../../shared/types/index.js';
+import {TsvFileReader} from '../../../shared/libs/file-reader/tsv-file-reader.js';
+import {createOffer} from '../../../shared/helpers/index.js';
+import {Offer} from '../../../shared/types/index.js';
 
 export class ImportCommand implements Command {
   private readonly offers: Offer[] = [];
