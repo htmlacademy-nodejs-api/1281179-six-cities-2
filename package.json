@@ -44,6 +44,8 @@
     "convict": "6.2.4",
     "convict-format-with-validator": "6.2.0",
     "got": "^14.4.7",
-    "pino": "9.7.0"
+    "inversify": "7.5.2",
+    "pino": "9.7.0",
+    "reflect-metadata": "0.2.2"
   }
 }
