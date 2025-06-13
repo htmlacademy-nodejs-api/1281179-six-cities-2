@@ -8,6 +8,7 @@ export type RestSchema = {
   DB_USERNAME: string;
   DB_PASSWORD: string
   DB_PORT: string;
+  DB_NAME: string;
 }
 
 convict.addFormats(validator);
@@ -48,5 +49,11 @@ export const configRestSchema = convict<RestSchema>({
     format: 'port',
     env: 'DB_PORT',
     default: '27017'
+  },
+  DB_NAME: {
+    doc: 'Database name',
+    format: String,
+    env: 'DB_NAME',
+    default: 'six-cities'
   }
 });
