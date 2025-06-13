@@ -1,3 +1,4 @@
+import { setTimeout } from 'node:timers/promises';
 import { inject, injectable } from 'inversify';
 import { Logger } from '../logger/logger.interface.js';
 import { DatabaseClient } from './database-client.interface.js';
@@ -6,8 +7,11 @@ import * as Mongoose from 'mongoose';
 
 @injectable()
 export class MongoDatabaseClient implements DatabaseClient {
+  private readonly MAX_ATTEMPTS = 5;
+  private readonly ATTEMPT_DELAY = 1000;
   private mongoose?: typeof Mongoose;
   private _isConnected = false;
+  private attempts = 0;
 
   constructor(
     @inject(Components.Logger) private readonly logger: Logger
@@ -22,19 +26,31 @@ export class MongoDatabaseClient implements DatabaseClient {
   }
 
   public async connect(uri: string): Promise<void> {
-    this.logger.info(`Connecting to ${uri}`);
-
     if (this.isConnectedToDatabase) {
       this.logger.info(`Already connected to ${uri}`);
       return;
     }
 
-    try {
-      this.mongoose = await Mongoose.connect(uri);
-      this.isConnectedToDatabase = true;
-      this.logger.info(`Successfully connected to ${uri}`);
-    } catch (error) {
-      this.logger.error(`Error connecting to ${uri}: ${error}`);
+    this.logger.info(`Connecting to ${uri}`);
+
+    while (this.attempts < this.MAX_ATTEMPTS) {
+      try {
+        this.mongoose = await Mongoose.connect(uri);
+        Mongoose.connection.on('error', (error) => {
+          this.logger.error(`Connection error: ${error}`);
+        });
+        this.isConnectedToDatabase = true;
+        this.logger.info(`Successfully connected to ${uri}`);
+        return;
+      } catch (error) {
+        this.attempts++;
+        if (this.attempts === this.MAX_ATTEMPTS) {
+          this.logger.error(`Failed to connect to ${uri} after ${this.MAX_ATTEMPTS} attempts`);
+          throw new Error(`Failed to connect to ${uri} after ${this.MAX_ATTEMPTS} attempts`);
+        }
+        this.logger.error(`Error connecting to ${uri}: ${error}. Retrying attempt ${this.attempts}`);
+        await setTimeout(this.ATTEMPT_DELAY);
+      }
     }
   }
 
@@ -47,6 +63,7 @@ export class MongoDatabaseClient implements DatabaseClient {
     try {
       await this.mongoose?.disconnect();
       this.isConnectedToDatabase = false;
+      this.attempts = 0;
       this.logger.info('Disconnected from the database');
     } catch (error) {
       this.logger.error(`Error disconnecting from the database: ${error}`);
