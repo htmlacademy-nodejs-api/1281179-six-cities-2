@@ -8,6 +8,8 @@ import { Components } from './shared/types/components.enum.js';
 import { RestSchema } from './shared/libs/config/rest.schema.js';
 import { Config } from './shared/libs/config/config.interface.js';
 import { DatabaseClient, MongoDatabaseClient } from './shared/libs/database-client/index.js';
+import { UserService } from './shared/modules/user/index.js';
+import { DefaultUserService } from './shared/modules/user/default-user.service.js';
 
 function bootstrap() {
   const container = new Container();
@@ -15,6 +17,7 @@ function bootstrap() {
   container.bind<Config<RestSchema>>(Components.RestConfig).to(RestConfig).inSingletonScope();
   container.bind<RestApplication>(Components.RestApplication).to(RestApplication);
   container.bind<DatabaseClient>(Components.DatabaseClient).to(MongoDatabaseClient).inSingletonScope();
+  container.bind<UserService>(Components.UserService).to(DefaultUserService).inSingletonScope();
 
   const restApp = container.get<RestApplication>(Components.RestApplication);
   restApp.init();
