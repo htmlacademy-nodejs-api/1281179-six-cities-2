@@ -36,9 +36,6 @@ export class MongoDatabaseClient implements DatabaseClient {
     while (this.attempts < this.MAX_ATTEMPTS) {
       try {
         this.mongoose = await Mongoose.connect(uri);
-        Mongoose.connection.on('error', (error) => {
-          this.logger.error(`Connection error: ${error}`);
-        });
         this.isConnectedToDatabase = true;
         this.logger.info(`Successfully connected to ${uri}`);
         return;
