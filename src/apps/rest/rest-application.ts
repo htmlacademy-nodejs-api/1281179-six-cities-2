@@ -1,10 +1,10 @@
 import { inject, injectable } from 'inversify';
 import { Config, RestSchema } from '../../shared/libs/config/index.js';
 import { Logger } from '../../shared/libs/logger/index.js';
-import { Components } from '../../shared/types/components.enum.js';
 import { DatabaseClient, getMongoDBURI } from '../../shared/libs/database-client/index.js';
 import { UserService } from '../../shared/modules/user/index.js';
-import { UserType } from '../../shared/types/user.type.js';
+import { UserType, Components, Cities } from '../../shared/types/index.js';
+import { CityService } from '../../shared/modules/city/index.js';
 
 @injectable()
 export class RestApplication {
@@ -16,7 +16,9 @@ export class RestApplication {
     @inject(Components.DatabaseClient)
     private readonly databaseClient: DatabaseClient,
     @inject(Components.UserService)
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    @inject(Components.CityService)
+    private readonly cityService: CityService
   ) {}
 
   private async initDB(): Promise<void> {
@@ -34,6 +36,14 @@ export class RestApplication {
   public async init() {
     this.logger.info('Initializing the application');
     await this.initDB();
+
+    this.cityService.createCity({
+      name: Cities.PARIS,
+      coords: {
+        latitude: 48.85661,
+        longitude: 2.351499
+      }
+    });
 
     this.userService.create({
       email: '8mE0M@example.com',

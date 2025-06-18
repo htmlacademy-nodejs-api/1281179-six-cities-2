@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import {OfferGenerator} from './offer-generator.interface.js';
 import {MockServerDataRequestType} from '../../types/index.js';
 import {generateRandomValue, getRandomItem, getRandomItems} from '../../helpers/index.js';
@@ -33,7 +34,7 @@ export class TsvOfferGenerator implements OfferGenerator {
       name: getRandomItem(this.mockData.names),
       description: getRandomItem(this.mockData.descriptions),
       publicationDate,
-      city: city.id,
+      city: crypto.createHash('sha256'),
       previewImage: `https://cdn2.thecatapi.com/images/${generateRandomValue(0, 1000)}.jpg`,
       photos: [
         `https://cdn2.thecatapi.com/images/${generateRandomValue(0, 1000)}.jpg`,

@@ -2,15 +2,13 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
 import { RestApplication } from './apps/rest/index.js';
-import { RestConfig } from './shared/libs/config/rest.config.js';
 import { Logger, PinoLogger } from './shared/libs/logger/index.js';
-import { Components } from './shared/types/components.enum.js';
-import { RestSchema } from './shared/libs/config/rest.schema.js';
-import { Config } from './shared/libs/config/config.interface.js';
+import { Components } from './shared/types/index.js';
+import { RestSchema, Config, RestConfig } from './shared/libs/config/index.js';
 import { DatabaseClient, MongoDatabaseClient } from './shared/libs/database-client/index.js';
-import { UserEntity, UserModel, UserService } from './shared/modules/user/index.js';
-import { DefaultUserService } from './shared/modules/user/default-user.service.js';
+import { UserEntity, UserModel, UserService, DefaultUserService } from './shared/modules/user/index.js';
 import { types } from '@typegoose/typegoose';
+import { CityEntity, CityModel, CityService, DefaultCityService } from './shared/modules/city/index.js';
 
 function bootstrap() {
   const container = new Container();
@@ -20,6 +18,8 @@ function bootstrap() {
   container.bind<DatabaseClient>(Components.DatabaseClient).to(MongoDatabaseClient).inSingletonScope();
   container.bind<UserService>(Components.UserService).to(DefaultUserService).inSingletonScope();
   container.bind<types.ModelType<UserEntity>>(Components.UserModel).toConstantValue(UserModel);
+  container.bind<CityService>(Components.CityService).to(DefaultCityService).inSingletonScope();
+  container.bind<types.ModelType<CityEntity>>(Components.CityModel).toConstantValue(CityModel);
 
   const restApp = container.get<RestApplication>(Components.RestApplication);
   restApp.init();
