@@ -1,7 +1,6 @@
-import crypto from 'node:crypto';
-import {OfferGenerator} from './offer-generator.interface.js';
-import {MockServerDataRequestType} from '../../types/index.js';
-import {generateRandomValue, getRandomItem, getRandomItems} from '../../helpers/index.js';
+import { OfferGenerator } from './offer-generator.interface.js';
+import { MockServerDataRequestType } from '../../types/index.js';
+import { generateRandomValue, getRandomItem, getRandomItems } from '../../helpers/index.js';
 
 export class TsvOfferGenerator implements OfferGenerator {
   private readonly MIN_OFFER_DAYS = 0;
@@ -30,11 +29,12 @@ export class TsvOfferGenerator implements OfferGenerator {
     const currentDate = new Date();
     const publicationDate = new Date(currentDate.setDate(currentDate.getDate() - generateRandomValue(this.MIN_OFFER_DAYS, this.MAX_OFFER_DAYS))).toISOString();
     const city = getRandomItem(this.mockData.cities);
+    const user = getRandomItem(this.mockData.users);
     const offer = {
       name: getRandomItem(this.mockData.names),
       description: getRandomItem(this.mockData.descriptions),
       publicationDate,
-      city: crypto.createHash('sha256'),
+      city: city.name,
       previewImage: `https://cdn2.thecatapi.com/images/${generateRandomValue(0, 1000)}.jpg`,
       photos: [
         `https://cdn2.thecatapi.com/images/${generateRandomValue(0, 1000)}.jpg`,
@@ -52,7 +52,10 @@ export class TsvOfferGenerator implements OfferGenerator {
       guestCount: generateRandomValue(this.MIN_GUEST_COUNT, this.MAX_GUEST_COUNT),
       cost: generateRandomValue(this.MIN_COST, this.MAX_COST),
       conveniences: getRandomItems(this.mockData.conveniences.map((el) => el.name)).join(';'),
-      author: getRandomItem(this.mockData.users).id,
+      authorEmail: user.email,
+      authorType: user.userType,
+      authorName: user.name,
+      autorAvatar: user.photo,
       commentCount: generateRandomValue(0, 100),
       coordinates: [city.coords.latitude, city.coords.longitude].join(';')
     };

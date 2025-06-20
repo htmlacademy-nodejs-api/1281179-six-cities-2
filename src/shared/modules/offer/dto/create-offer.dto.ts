@@ -1,10 +1,10 @@
-import { Cities, ConvenienceType, Property, User } from '../../../types/index.js';
+import { ConvenienceType, Property } from '../../../types/index.js';
 
 export class CreateOfferDto {
   name: string;
   description: string;
   publicationDate: string;
-  city: Cities;
+  city: string;
   previewImage: string;
   photos: string[];
   isPremium: boolean;
@@ -15,7 +15,7 @@ export class CreateOfferDto {
   guestCount: number;
   cost: number;
   conveniences: ConvenienceType[];
-  author: User;
+  user: string;
   commentCount: number;
   coordinates: [number, number];
 }

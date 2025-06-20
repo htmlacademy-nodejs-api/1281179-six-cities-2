@@ -2,10 +2,7 @@ import { inject, injectable } from 'inversify';
 import { Config, RestSchema } from '../../shared/libs/config/index.js';
 import { Logger } from '../../shared/libs/logger/index.js';
 import { DatabaseClient, getMongoDBURI } from '../../shared/libs/database-client/index.js';
-import { UserService } from '../../shared/modules/user/index.js';
-import { UserType, Components, Cities } from '../../shared/types/index.js';
-import { CityService } from '../../shared/modules/city/index.js';
-import { OfferService } from '../../shared/modules/offer/index.js';
+import { Components } from '../../shared/types/index.js';
 
 @injectable()
 export class RestApplication {
@@ -16,12 +13,6 @@ export class RestApplication {
     private readonly config: Config<RestSchema>,
     @inject(Components.DatabaseClient)
     private readonly databaseClient: DatabaseClient,
-    @inject(Components.UserService)
-    private readonly userService: UserService,
-    @inject(Components.CityService)
-    private readonly cityService: CityService,
-    @inject(Components.OfferService)
-    private readonly offerService: OfferService
   ) {}
 
   private async initDB(): Promise<void> {

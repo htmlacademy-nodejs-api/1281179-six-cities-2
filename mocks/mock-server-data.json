@@ -169,7 +169,7 @@
   "cityById": [
     {
       "id": "paris",
-      "name": "Paris",
+      "name": "paris",
       "coords": {
         "latitude": 48.85661,
         "longitude": 2.351499
@@ -177,7 +177,7 @@
     },
     {
       "id": "cologne",
-      "name": "Cologne",
+      "name": "cologne",
       "coords": {
         "latitude": 50.938361,
         "longitude": 6.959974
@@ -185,7 +185,7 @@
     },
     {
       "id": "brussels",
-      "name": "Brussels",
+      "name": "brussels",
       "coords": {
         "latitude": 50.846557,
         "longitude": 4.351697
@@ -193,7 +193,7 @@
     },
     {
       "id": "amsterdam",
-      "name": "Amsterdam",
+      "name": "hamburg",
       "coords": {
         "latitude": 52.370216,
         "longitude": 4.895168
@@ -201,7 +201,7 @@
     },
     {
       "id": "hamburg",
-      "name": "Hamburg",
+      "name": "hamburg",
       "coords": {
         "latitude": 53.550341,
         "longitude": 10.000654
@@ -209,7 +209,7 @@
     },
     {
       "id": "dusseldorf",
-      "name": "Dusseldorf",
+      "name": "hamburg",
       "coords": {
         "latitude": 51.2254021,
         "longitude": 51.225402

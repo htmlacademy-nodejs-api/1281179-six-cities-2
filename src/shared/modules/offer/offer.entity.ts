@@ -58,18 +58,14 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop()
   public cost: number;
 
-  @prop({
-    type: () => [String],
-    enum: ConvenienceType,
-  })
+  @prop()
   public conveniences: ConvenienceType[];
 
   @prop({
     ref: UserEntity,
     required: true,
-    _id: false,
   })
-  public author: Ref<UserEntity> ;
+  public user: Ref<UserEntity> ;
 
   @prop()
   public commentCount: number;

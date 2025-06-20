@@ -9,10 +9,10 @@ import { Logger } from '../../libs/logger/index.js';
 @injectable()
 export class DefaultOfferService implements OfferService {
   constructor(
+    @inject(Components.Logger)
+    private readonly logger: Logger,
     @inject(Components.OfferModel)
     private readonly offerModel: types.ModelType<OfferEntity>,
-    @inject(Components.Logger)
-    private readonly logger: Logger
   ) {}
 
   async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {

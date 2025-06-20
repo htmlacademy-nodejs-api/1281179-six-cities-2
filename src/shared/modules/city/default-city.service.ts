@@ -10,11 +10,10 @@ import { Logger } from '../../libs/logger/index.js';
 export class DefaultCityService implements CityService {
 
   constructor(
+    @inject(Components.Logger)
+    private readonly logger: Logger,
     @inject(Components.CityModel)
     private readonly cityModel: types.ModelType<CityEntity>,
-
-    @inject(Components.Logger)
-    private readonly logger: Logger
   ) {}
 
   async createCity(dto: CreateCityDto): Promise<DocumentType<CityEntity>> {
