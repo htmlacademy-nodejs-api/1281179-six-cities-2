@@ -5,6 +5,7 @@ import { DatabaseClient, getMongoDBURI } from '../../shared/libs/database-client
 import { UserService } from '../../shared/modules/user/index.js';
 import { UserType, Components, Cities } from '../../shared/types/index.js';
 import { CityService } from '../../shared/modules/city/index.js';
+import { OfferService } from '../../shared/modules/offer/index.js';
 
 @injectable()
 export class RestApplication {
@@ -18,7 +19,9 @@ export class RestApplication {
     @inject(Components.UserService)
     private readonly userService: UserService,
     @inject(Components.CityService)
-    private readonly cityService: CityService
+    private readonly cityService: CityService,
+    @inject(Components.OfferService)
+    private readonly offerService: OfferService
   ) {}
 
   private async initDB(): Promise<void> {
@@ -36,21 +39,5 @@ export class RestApplication {
   public async init() {
     this.logger.info('Initializing the application');
     await this.initDB();
-
-    this.cityService.createCity({
-      name: Cities.PARIS,
-      coords: {
-        latitude: 48.85661,
-        longitude: 2.351499
-      }
-    });
-
-    this.userService.create({
-      email: '8mE0M@example.com',
-      name: 'Admin',
-      photo: '',
-      password: 'password',
-      userType: UserType.DEFAULT,
-    }, 'salt');
   }
 }

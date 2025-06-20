@@ -1,4 +1,4 @@
-import {Cities, Convenience, Offer, Property} from '../types/index.js';
+import {Cities, ConvenienceType, Offer, Property} from '../types/index.js';
 
 export function createOffer(offerData: string): Offer {
   const [
@@ -37,7 +37,7 @@ export function createOffer(offerData: string): Offer {
     roomCount: Number(roomCount),
     guestCount: Number(guestCount),
     cost: Number(cost),
-    conveniences: conveniences.split(';') as Convenience[],
+    conveniences: conveniences.split(';') as ConvenienceType[],
     author: Number(author),
     commentCount: Number(commentCount),
     coordinates: coordinates.split(';').map(Number) as [number, number],

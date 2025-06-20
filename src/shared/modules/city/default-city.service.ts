@@ -18,11 +18,7 @@ export class DefaultCityService implements CityService {
   ) {}
 
   async createCity(dto: CreateCityDto): Promise<DocumentType<CityEntity>> {
-    const city = new CityEntity();
-    city.name = dto.name;
-    city.coords = dto.coords;
-
-    const result = await this.cityModel.create(city);
+    const result = await this.cityModel.create(dto);
     this.logger.info('City was successfully created');
     return result;
   }

@@ -1,6 +1,6 @@
 export type { Offer } from './offer.type.js';
 export { Property } from './property.type.js';
-export { Convenience } from './conveniences.type.js';
+export { ConvenienceType, Convenience } from './conveniences.type.js';
 export { Cities } from './cities.enum.js';
 export { City, Coords } from './city.type.js';
 export * from './user.type.js';
