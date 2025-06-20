@@ -1,10 +1,10 @@
 import {Cities} from './cities.enum.js';
 
+export type Coords = {
+  latitude: number;
+  longitude: number;
+}
 export type City = {
-  id: Cities;
   name: Cities;
-  coords: {
-    latitude: number;
-    longitude: number;
-  };
+  coords: Coords;
 }

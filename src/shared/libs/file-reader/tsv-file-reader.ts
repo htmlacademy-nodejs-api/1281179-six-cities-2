@@ -44,7 +44,9 @@ export class TsvFileReader extends EventEmitter implements FileReader {
         importedRowCount++;
 
         // Вызываем события чтения строки
-        this.emit('line', completeRaw);
+        await new Promise((resolve) => {
+          this.emit('line', completeRaw, resolve);
+        });
       }
     }
 

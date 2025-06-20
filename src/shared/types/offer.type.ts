@@ -1,5 +1,5 @@
 import {Property} from './property.type.js';
-import {Convenience} from './conveniences.type.js';
+import {ConvenienceType} from './conveniences.type.js';
 import {User} from './user.type.js';
 import {Cities} from './cities.enum.js';
 
@@ -17,8 +17,8 @@ export type Offer = {
     roomCount: number; // Количество комнат. Обязательное. Мин. 1, Макс. 8;
     guestCount: number; // Количество гостей. Обязательное. Мин. 1, Макс. 10;
     cost: number; // Стоимость аренды. Обязательное. Мин. 100, Макс. 100 000;
-    conveniences: Convenience[]; // Удобства. Обязательное. Список удобств. Один или несколько вариантов из списка: Breakfast, Air conditioning, Laptop friendly workspace, Baby seat, Washer, Towels, Fridge;
-    author: number; // Автор предложения. Обязательное. Ссылка на сущность «Пользователь»;
+    conveniences: ConvenienceType[]; // Удобства. Обязательное. Список удобств. Один или несколько вариантов из списка: Breakfast, Air conditioning, Laptop friendly workspace, Baby seat, Washer, Towels, Fridge;
+    author: User; // Автор предложения. Обязательное. Ссылка на сущность «Пользователь»;
     commentCount: number; // Количество комментариев. Рассчитывается автоматически;
     coordinates: [number, number]; // Координаты предложения для аренды. Обязательное. Координаты представлены широтой и долготой.
 }
@@ -38,7 +38,7 @@ export type UserResponse = {
     roomCount: number; // Количество комнат. Обязательное. Мин. 1, Макс. 8;
     guestCount: number; // Количество гостей. Обязательное. Мин. 1, Макс. 10;
     cost: number; // Стоимость аренды. Обязательное. Мин. 100, Макс. 100 000;
-    conveniences: Convenience[]; // Удобства. Обязательное. Список удобств. Один или несколько вариантов из списка: Breakfast, Air conditioning, Laptop friendly workspace, Baby seat, Washer, Towels, Fridge;
+    conveniences: ConvenienceType[]; // Удобства. Обязательное. Список удобств. Один или несколько вариантов из списка: Breakfast, Air conditioning, Laptop friendly workspace, Baby seat, Washer, Towels, Fridge;
     author: User; // Автор предложения. Обязательное. Ссылка на сущность «Пользователь»;
     commentCount: number; // Количество комментариев. Рассчитывается автоматически;
     coordinates: [number, number]; // Координаты предложения для аренды. Обязательное. Координаты представлены широтой и долготой.

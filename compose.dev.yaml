@@ -1,0 +1,35 @@
+name: six-cities
+
+services:
+  # Имя сервиса выбирается самостоятельно. Важно для работы между контейнерами
+  db:
+    # Образ MongoDB
+    image: mongo:8.0
+    # При перезапусте docker engine пересоздает контейнер
+    restart: always
+    # Имя контейнера
+    container_name: six-cities_mongodb
+    ports:
+      - ${DB_PORT}:27017
+    # Переменные окружения. Перечислены в документации image
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - six-cities_data:/data/db
+
+  db_ui:
+    image: mongo-express:latest
+    restart: always
+    container_name: six-cities_mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: ${DB_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${DB_PASSWORD}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${DB_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${DB_PASSWORD}
+      ME_CONFIG_MONGODB_URL: mongodb://${DB_USERNAME}:${DB_PASSWORD}@db:${DB_PORT}/
+
+volumes:
+  six-cities_data:

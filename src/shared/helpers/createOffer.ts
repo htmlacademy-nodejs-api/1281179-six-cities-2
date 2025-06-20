@@ -1,4 +1,4 @@
-import {Cities, Convenience, Offer, Property} from '../types/index.js';
+import {Cities, ConvenienceType, Offer, Property, UserType} from '../types/index.js';
 
 export function createOffer(offerData: string): Offer {
   const [
@@ -16,12 +16,19 @@ export function createOffer(offerData: string): Offer {
     guestCount,
     cost,
     conveniences,
-    author,
+    authorEmail,
+    authorType,
+    authorName,
+    autorAvatar,
     commentCount,
     coordinates
   ] = offerData
     .trim()
     .split('\t');
+
+  if (!coordinates) {
+    console.log({offerData});
+  }
 
   return {
     name,
@@ -37,8 +44,13 @@ export function createOffer(offerData: string): Offer {
     roomCount: Number(roomCount),
     guestCount: Number(guestCount),
     cost: Number(cost),
-    conveniences: conveniences.split(';') as Convenience[],
-    author: Number(author),
+    conveniences: conveniences.split(';') as ConvenienceType[],
+    author: {
+      email: authorEmail,
+      name: authorName,
+      userType: UserType[authorType as keyof typeof UserType],
+      photo: autorAvatar
+    },
     commentCount: Number(commentCount),
     coordinates: coordinates.split(';').map(Number) as [number, number],
   };
