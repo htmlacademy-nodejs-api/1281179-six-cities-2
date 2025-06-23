@@ -1,7 +1,7 @@
 import {UserType} from './user.type.js';
 import {City} from './city.type.js';
 import {Property} from './property.type.js';
-import {Convenience} from './conveniences.type.js';
+import {ConvenienceType} from './conveniences.type.js';
 
 export type OffersRequestType = {
   names: string[];
@@ -24,7 +24,7 @@ export type PropertyType = {
 
 export type Conveniences = {
   id: number,
-  name: Convenience
+  name: ConvenienceType
 }
 
 export type MockServerDataRequestType = {
