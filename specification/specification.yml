@@ -2,14 +2,16 @@ openapi: 3.0.0
 info:
   title: API сервиса аренды жилья
   version: 1.0.0
-  description: API для управления пользователями, предложениями по аренде и комментариями в сервисе аренды жилья.
+  description: |
+    API для управления пользователями, предложениями по аренде и комментариями в сервисе аренды жилья.
+    Спецификация разработана в соответствии с ТЗ.
 
 servers:
   - url: http://localhost:3000/api
     description: Локальный сервер разработки
 
 components:
-  # Схемы безопасности для аутентификации пользователя
+  # --- Схемы безопасности для аутентификации пользователя ---
   securitySchemes:
     BearerAuth:
       type: http
@@ -19,12 +21,12 @@ components:
         Авторизация через JWT токен.
         Токен должен быть передан в заголовке `Authorization` в формате `Bearer {токен}`.
 
-  # Определения моделей данных (сущностей)
+  # --- Определения моделей данных (сущностей) ---
   schemas:
-    # --- Сущность: Пользователь ---
+    # --- Сущность: Пользователь (3.1) ---
     User:
       type: object
-      description: Базовая информация о пользователе, которая может быть возвращена в ответах API.
+      description: Базовая информация о пользователе, которая может быть возвращена в ответах API (без чувствительных данных).
       properties:
         id:
           type: string
@@ -35,41 +37,26 @@ components:
           type: string
           minLength: 1
           maxLength: 15
-          description: Имя пользователя.
+          description: Имя пользователя (3.1.1).
         email:
           type: string
           format: email
-          description: Электронная почта пользователя. Должна быть уникальной в системе.
+          description: Электронная почта пользователя. Должна быть уникальной в системе (3.1.2).
         avatarUrl:
           type: string
           format: url
-          nullable: true # Поле может быть пустым (null), если аватар не загружен.
+          nullable: true # Поле может быть пустым (null), если аватар не загружен (3.1.3).
           description: URL аватара пользователя. Если пользователь не загрузил аватар, сервис вернет ссылку на аватар по умолчанию.
         type:
           type: string
-          enum: [default, pro]
-          description: Тип пользователя (обычный или pro).
+          enum: [обычный, pro]
+          description: Тип пользователя (обычный или pro) (3.1.1).
       required:
         - name
         - email
         - type
 
-    UserSensitive: # Модель для создания пользователя, включающая пароль.
-      type: object
-      description: Модель пользователя, используемая для операций, требующих конфиденциальных данных, таких как пароль.
-      allOf:
-        - $ref: '#/components/schemas/User' # Наследует все поля из базовой схемы User.
-      properties:
-        password:
-          type: string
-          minLength: 6
-          maxLength: 12
-          writeOnly: true # Поле только для записи, не возвращается в ответах API.
-          description: Пароль пользователя. Хранится в хешированном виде.
-      required:
-        - password # Пароль обязателен при создании или смене.
-
-    UserLogin: # Модель для запроса аутентификации (входа).
+    UserLogin: # Модель для запроса аутентификации (входа) (5.9.2)
       type: object
       description: Модель данных для запроса на вход пользователя.
       properties:
@@ -86,7 +73,7 @@ components:
         - email
         - password
 
-    UserResponse: # Модель ответа при получении информации о пользователе (без пароля).
+    UserResponse: # Модель ответа при получении информации о пользователе (без пароля) (5.8.6, 5.11.3)
       type: object
       description: Упрощенная модель пользователя для ответов API, не включающая конфиденциальные данные.
       properties:
@@ -103,14 +90,14 @@ components:
           nullable: true
         type:
           type: string
-          enum: [default, pro]
+          enum: [обычный, pro]
       required:
         - id
         - name
         - email
         - type
 
-    # --- Сущность: Предложение по аренде ---
+    # --- Сущность: Город (3.2.2) ---
     City:
       type: object
       description: Информация о городе, связанном с предложением.
@@ -132,17 +119,17 @@ components:
         - latitude
         - longitude
 
-    HousingType:
+    HousingType: # Тип жилья (3.2.1)
       type: string
       enum: [apartment, house, room, hotel]
       description: Тип жилья, предоставляемого в аренду.
 
-    Amenity:
+    Amenity: # Удобство (3.2.1)
       type: string
       enum: [Breakfast, Air conditioning, Laptop friendly workspace, Baby seat, Washer, Towels, Fridge]
       description: Доступное удобство в предложении.
 
-    Location:
+    Location: # Координаты предложения (3.2.1)
       type: object
       description: Географические координаты предложения (широта и долгота).
       properties:
@@ -158,6 +145,7 @@ components:
         - latitude
         - longitude
 
+    # --- Сущность: Предложение по аренде (3.2) ---
     Offer:
       type: object
       description: Полная информация о предложении по аренде.
@@ -166,29 +154,29 @@ components:
           type: string
           format: uuid
           description: Уникальный идентификатор предложения, генерируемый сервером.
-          readOnly: true
+          readOnly: true # Только для чтения.
         title:
           type: string
           minLength: 10
           maxLength: 100
-          description: Наименование предложения (заголовок).
+          description: Наименование предложения (заголовок) (3.2.1).
         description:
           type: string
           minLength: 20
           maxLength: 1024
-          description: Полное описание предложения.
+          description: Полное описание предложения (3.2.1).
         postDate:
           type: string
           format: date-time
-          description: Дата и время публикации предложения (в формате ISO 8601).
+          description: Дата и время публикации предложения (в формате ISO 8601) (3.2.1).
           readOnly: true # Устанавливается сервером при создании.
         city:
-          $ref: '#/components/schemas/City' # Ссылка на схему City.
+          $ref: '#/components/schemas/City' # Ссылка на схему City (3.2.1).
           description: Город, в котором находится предложение.
         previewImage:
           type: string
           format: url
-          description: Ссылка на изображение, используемое в качестве превью для предложения.
+          description: Ссылка на изображение, используемое в качестве превью для предложения (3.2.1).
         images:
           type: array
           items:
@@ -196,53 +184,53 @@ components:
             format: url
           minItems: 6
           maxItems: 6
-          description: Список ссылок на 6 фотографий жилья.
+          description: Список ссылок на 6 фотографий жилья (3.2.1).
         isPremium:
           type: boolean
-          description: Флаг, указывающий на премиальность предложения.
+          description: Флаг, указывающий на премиальность предложения (3.2.1).
         isFavorite:
           type: boolean
-          description: Флаг, указывающий, добавлено ли предложение в избранное текущим авторизованным пользователем. (Рассчитывается на сервере).
+          description: Флаг, указывающий, добавлено ли предложение в избранное текущим авторизованным пользователем. (Рассчитывается на сервере) (3.2.1).
         rating:
           type: number
           format: float
           minimum: 1.0
           maximum: 5.0
-          description: Рейтинг предложения (число от 1.0 до 5.0, с одним знаком после запятой).
+          description: Рейтинг предложения (число от 1.0 до 5.0, с одним знаком после запятой) (3.2.1).
         type:
-          $ref: '#/components/schemas/HousingType' # Ссылка на схему HousingType.
+          $ref: '#/components/schemas/HousingType' # Ссылка на схему HousingType (3.2.1).
           description: Тип жилья (например, apartment, house).
         bedrooms:
           type: integer
           minimum: 1
           maximum: 8
-          description: Количество комнат.
+          description: Количество комнат (3.2.1).
         maxGuests:
           type: integer
           minimum: 1
           maximum: 10
-          description: Максимальное количество гостей, которое может разместиться.
+          description: Максимальное количество гостей, которое может разместиться (3.2.1).
         price:
           type: integer
           minimum: 100
           maximum: 100000
-          description: Стоимость аренды за ночь.
+          description: Стоимость аренды за ночь (3.2.1).
         amenities:
           type: array
           items:
-            $ref: '#/components/schemas/Amenity' # Ссылка на схему Amenity.
+            $ref: '#/components/schemas/Amenity' # Ссылка на схему Amenity (3.2.1).
           minItems: 1 # Минимум одно удобство должно быть выбрано.
           uniqueItems: true # Удобства не должны повторяться.
           description: Список доступных удобств.
         author:
-          $ref: '#/components/schemas/UserResponse' # Ссылка на упрощенную схему пользователя для автора.
+          $ref: '#/components/schemas/UserResponse' # Ссылка на упрощенную схему пользователя для автора (3.2.1).
           description: Информация об авторе предложения.
         commentCount:
           type: integer
-          readOnly: true # Рассчитывается автоматически сервером.
-          description: Количество комментариев к предложению.
+          readOnly: true # Рассчитывается автоматически сервером (3.2.1).
+          description: Количество комментариев к предложению (5.4.4, 5.5.3).
         location:
-          $ref: '#/components/schemas/Location' # Ссылка на схему Location.
+          $ref: '#/components/schemas/Location' # Ссылка на схему Location (3.2.1).
           description: Географические координаты предложения (широта и долгота).
       required:
         - title
@@ -257,159 +245,11 @@ components:
         - maxGuests
         - price
         - amenities
+        - author # При создании предложения, автор определяется сервером на основе авторизованного пользователя. Это поле здесь для ответа.
         - location
         # Поля id, postDate, isFavorite, commentCount не требуются при создании/редактировании, так как управляются сервером.
 
-    OfferCreate: # Модель для создания нового предложения.
-      type: object
-      description: Модель данных для создания нового предложения по аренде.
-      properties:
-        title:
-          type: string
-          minLength: 10
-          maxLength: 100
-          description: Наименование предложения.
-        description:
-          type: string
-          minLength: 20
-          maxLength: 1024
-          description: Описание предложения.
-        cityId: # В запросе передаем только ID (например, название) города.
-          type: string
-          description: Идентификатор города (название) для предложения.
-        previewImage:
-          type: string
-          format: url
-          description: Ссылка на превью изображение.
-        images:
-          type: array
-          items:
-            type: string
-            format: url
-          minItems: 6
-          maxItems: 6
-          description: Список ссылок на 6 фотографий жилья.
-        isPremium:
-          type: boolean
-          description: Признак премиальности предложения.
-        rating: # Рейтинг не передается при создании, он рассчитывается на основе комментариев.
-          type: number
-          format: float
-          minimum: 1.0
-          maximum: 5.0
-          description: Рейтинг предложения. Может быть опущен при создании (по умолчанию 0).
-          nullable: true
-        type:
-          $ref: '#/components/schemas/HousingType'
-          description: Тип жилья.
-        bedrooms:
-          type: integer
-          minimum: 1
-          maximum: 8
-          description: Количество комнат.
-        maxGuests:
-          type: integer
-          minimum: 1
-          maximum: 10
-          description: Максимальное количество гостей.
-        price:
-          type: integer
-          minimum: 100
-          maximum: 100000
-          description: Стоимость аренды за ночь.
-        amenities:
-          type: array
-          items:
-            $ref: '#/components/schemas/Amenity'
-          minItems: 1
-          uniqueItems: true
-          description: Список удобств.
-        location:
-          $ref: '#/components/schemas/Location'
-          description: Географические координаты предложения.
-      required:
-        - title
-        - description
-        - cityId
-        - previewImage
-        - images
-        - isPremium
-        - type
-        - bedrooms
-        - maxGuests
-        - price
-        - amenities
-        - location
-
-    OfferUpdate: # Модель для редактирования существующего предложения.
-      type: object
-      description: Модель данных для частичного или полного обновления предложения по аренде.
-      properties:
-        title:
-          type: string
-          minLength: 10
-          maxLength: 100
-          description: Новое наименование предложения.
-        description:
-          type: string
-          minLength: 20
-          maxLength: 1024
-          description: Новое описание предложения.
-        cityId:
-          type: string
-          description: Новый идентификатор города.
-        previewImage:
-          type: string
-          format: url
-          description: Новая ссылка на превью изображение.
-        images:
-          type: array
-          items:
-            type: string
-            format: url
-          minItems: 6
-          maxItems: 6
-          description: Обновленный список из 6 фотографий жилья.
-        isPremium:
-          type: boolean
-          description: Обновленный флаг премиальности.
-        rating:
-          type: number
-          format: float
-          minimum: 1.0
-          maximum: 5.0
-          description: Обновленный рейтинг предложения.
-        type:
-          $ref: '#/components/schemas/HousingType'
-          description: Новый тип жилья.
-        bedrooms:
-          type: integer
-          minimum: 1
-          maximum: 8
-          description: Новое количество комнат.
-        maxGuests:
-          type: integer
-          minimum: 1
-          maximum: 10
-          description: Новое максимальное количество гостей.
-        price:
-          type: integer
-          minimum: 100
-          maximum: 100000
-          description: Новая стоимость аренды за ночь.
-        amenities:
-          type: array
-          items:
-            $ref: '#/components/schemas/Amenity'
-          minItems: 1
-          uniqueItems: true
-          description: Обновленный список удобств.
-        location:
-          $ref: '#/components/schemas/Location'
-          description: Новые географические координаты предложения.
-        # Все поля в OfferUpdate необязательны, т.к. это PATCH-запрос.
-
-    # --- Сущность: Комментарий ---
+    # --- Сущность: Комментарий (3.3) ---
     Comment:
       type: object
       description: Полная информация о комментарии к предложению.
@@ -423,25 +263,25 @@ components:
           type: string
           minLength: 5
           maxLength: 1024
-          description: Текст комментария.
+          description: Текст комментария (3.3.1).
         postDate:
           type: string
           format: date-time
-          description: Дата и время публикации комментария (в формате ISO 8601).
+          description: Дата и время публикации комментария (в формате ISO 8601) (3.3.1).
           readOnly: true # Устанавливается сервером при создании.
         rating:
           type: integer
           minimum: 1
           maximum: 5
-          description: Рейтинг, выставленный в комментарии (от 1 до 5).
+          description: Рейтинг, выставленный в комментарии (от 1 до 5) (3.3.1).
         author:
-          $ref: '#/components/schemas/UserResponse' # Ссылка на упрощенную схему пользователя для автора.
+          $ref: '#/components/schemas/UserResponse' # Ссылка на упрощенную схему пользователя для автора (3.3.1).
           description: Информация об авторе комментария.
       required:
         - text
-        - rating # При создании комментария текст и рейтинг обязательны.
+        - rating # При создании комментария текст и рейтинг обязательны (5.7.3).
 
-    CommentCreate: # Модель для создания нового комментария.
+    CommentCreate: # Модель для создания нового комментария (5.7.3)
       type: object
       description: Модель данных для создания нового комментария.
       properties:
@@ -459,9 +299,7 @@ components:
         - text
         - rating
 
-
-    # --- Общие модели для ответов на ошибки ---
-    Error:
+    Error: # Общая модель ошибки, для использования в content.
       type: object
       description: Стандартная структура ответа для ошибок API.
       properties:
@@ -476,12 +314,12 @@ components:
       required:
         - message
 
-  # Переиспользуемые ответы на ошибки
+  # --- Переиспользуемые ответы на ошибки ---
   responses:
     UnauthorizedError:
       description: |
         **401 Unauthorized**: Пользователь не авторизован или предоставленный токен недействителен/отсутствует.
-        Необходимо выполнить вход.
+        Необходимо выполнить вход (5.9.3, 5.10.3).
       content:
         application/json:
           schema:
@@ -492,7 +330,7 @@ components:
       description: |
         **403 Forbidden**: Доступ запрещен.
         Пользователь авторизован, но не имеет достаточных прав для выполнения данного действия
-        (например, попытка отредактировать/удалить чужое предложение).
+        (например, попытка отредактировать/удалить чужое предложение) (5.2.3, 5.3.2).
       content:
         application/json:
           schema:
@@ -512,7 +350,7 @@ components:
     BadRequestError:
       description: |
         **400 Bad Request**: Неверный запрос или ошибки валидации данных.
-        Может содержать детали по некорректным полям.
+        Может содержать детали по некорректным полям (5.1.4, 5.2.5, 5.7.4, 5.8.5).
       content:
         application/json:
           schema:
@@ -525,10 +363,20 @@ components:
                 details:
                   name: "String too short (minimum 1 character)"
                   email: "Invalid email format"
-            duplicateEmail:
-              summary: Дубликат email при регистрации
+            invalidInput:
+              summary: Некорректные входные данные
               value:
-                message: Email already exists
+                message: Invalid input
+    ConflictError:
+      description: |
+        **409 Conflict**: Конфликт данных.
+        Например, при попытке зарегистрировать пользователя с уже существующим email (5.8.4).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource conflict (e.g., Email already exists)
     InternalServerError:
       description: |
         **500 Internal Server Error**: Внутренняя ошибка сервера.
@@ -541,63 +389,88 @@ components:
             message: Internal Server Error
 
 # Глобальное применение схемы безопасности: все операции по умолчанию требуют авторизации.
-# Исключения указываются явно для каждого пути (например, `security: []`).
+# Исключения указываются явно для каждого пути (`security: []`).
 security:
   - BearerAuth: []
 
-# Описание конечных точек (ресурсов) API
+# --- Описание конечных точек (ресурсов) API (5. раздел ТЗ) ---
 paths:
   # --- Ресурсы для управления пользователями ---
   /users:
-    post:
+    post: # Создание нового пользователя (5.8) с опциональным аватаром (3.1.1)
       tags:
         - Пользователи
       summary: Создание нового пользователя
       description: |
-        Создает нового пользователя в системе.
-        Доступно только **анонимным клиентам**.
-        Электронная почта нового пользователя должна быть уникальной.
+        Создает нового пользователя в системе, **включая опциональную загрузку аватара**.
+        Доступно только **анонимным клиентам** (5.8.3).
+        Электронная почта нового пользователя должна быть уникальной (5.8.4).
+        Данные пользователя и файл аватара (если есть) отправляются в формате `multipart/form-data`.
       operationId: createUser
       security: [] # Явно отключаем авторизацию для этого эндпоинта.
       requestBody:
-        description: Данные, необходимые для регистрации нового пользователя.
+        description: Данные, необходимые для регистрации нового пользователя, включая опциональный файл аватара.
         required: true
         content:
-          application/json:
+          multipart/form-data: # Изменяем тип контента на multipart/form-data
             schema:
-              $ref: '#/components/schemas/UserSensitive'
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 15
+                  description: Имя пользователя (3.1.1).
+                email:
+                  type: string
+                  format: email
+                  description: Электронная почта пользователя. Должна быть уникальной в системе (3.1.2).
+                password:
+                  type: string
+                  minLength: 6
+                  maxLength: 12
+                  writeOnly: true # Поле только для записи, не возвращается в ответах API (5.8.6, 5.8.7).
+                  description: Пароль пользователя (3.1.1).
+                type:
+                  type: string
+                  enum: [обычный, pro]
+                  description: Тип пользователя (3.1.1).
+                avatar: # Поле для файла аватара
+                  type: string
+                  format: binary # Указывает на файл
+                  nullable: true # Аватар необязателен (3.1.1)
+                  description: Опциональное изображение аватара пользователя в формате .jpg или .png.
+              required: # Обязательные поля для регистрации
+                - name
+                - email
+                - password
+                - type
       responses:
         '201':
-          description: Пользователь успешно создан.
+          description: Пользователь успешно создан. Возвращаемая информация не содержит конфиденциальных данных (5.8.6).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
         '400':
-          $ref: '#/components/responses/BadRequestError'
-        '409': # Conflict, если пользователь с таким email уже существует.
-          description: Пользователь с указанным email уже существует.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                message: User with this email already exists
+          $ref: '#/components/responses/BadRequestError' # Валидация не пройдена (5.8.5).
+        '409':
+          $ref: '#/components/responses/ConflictError' # Пользователь с таким email уже существует (5.8.4).
         '500':
           $ref: '#/components/responses/InternalServerError'
 
   /users/login:
-    post:
+    post: # Вход в приложение (аутентификация) (5.9)
       tags:
         - Пользователи
       summary: Вход в приложение (аутентификация)
       description: |
         Аутентифицирует пользователя по email и паролю.
-        В случае успеха возвращает JWT токен, который необходимо использовать для последующих авторизованных запросов.
+        В случае успеха возвращает JWT токен, который необходимо использовать для последующих авторизованных запросов (5.9.4, 5.9.5).
       operationId: loginUser
       security: [] # Не требует авторизации, так как это операция входа.
       requestBody:
-        description: Учетные данные пользователя (email и пароль).
+        description: Учетные данные пользователя (email и пароль) (5.9.2).
         required: true
         content:
           application/json:
@@ -621,7 +494,7 @@ paths:
                     type: string
                     description: JWT токен для использования в заголовках.
         '401':
-          description: Неверный логин или пароль, либо пользователь не найден.
+          description: Неверный логин или пароль, либо пользователь не найден (5.9.3).
           content:
             application/json:
               schema:
@@ -632,32 +505,32 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
   /users/logout:
-    delete: # DELETE метод подходит для завершения сессии/инвалидации токена.
+    delete: # Выход из приложения (завершение сеанса) (5.10)
       tags:
         - Пользователи
       summary: Выход из приложения (завершение сеанса)
       description: |
         Завершает текущий пользовательский сеанс.
-        Доступно только **авторизованным клиентам**.
+        Доступно только **авторизованным клиентам** (5.10.2).
         Если используется сессионный механизм, токен аннулируется.
       operationId: logoutUser
       responses:
         '204':
-          description: Сеанс успешно завершен. Тело ответа отсутствует (No Content).
+          description: Сеанс успешно завершен (No Content) (5.10.3).
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          $ref: '#/components/responses/UnauthorizedError' # Токен не прошел проверку (5.10.3).
         '500':
           $ref: '#/components/responses/InternalServerError'
 
   /users/status:
-    get:
+    get: # Проверка состояния пользователя (5.11)
       tags:
         - Пользователи
       summary: Проверка состояния авторизации
       description: |
-        Проверяет, авторизован ли текущий клиент.
-        В случае авторизации возвращает основную информацию о пользователе (без пароля).
-        Проверка производится на основании сессионного токена.
+        Проверяет, авторизован ли текущий клиент (5.11.1).
+        В случае авторизации возвращает основную информацию о пользователе (без пароля) (5.11.3).
+        Проверка производится на основании сессионного токена (5.11.2).
       operationId: checkUserStatus
       responses:
         '200':
@@ -677,17 +550,119 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /users/{userID}/avatar: # Загрузка и получение аватара пользователя (3.1.1, 3.1.3)
+    # Этот эндпоинт теперь может использоваться для изменения аватара после регистрации.
+    post: # Изменение/обновление аватара пользователя
+      tags:
+        - Пользователи
+      summary: Обновление аватара пользователя
+      description: |
+        Обновляет изображение аватара для указанного пользователя.
+        Изображение должно быть в формате `.png` или `.jpg` (3.1.1).
+        Для отправки файла используется кодировка `multipart/form-data`.
+        Доступно только **авторизованным клиентам**.
+      operationId: updateUserAvatar
+      parameters:
+        - in: path
+          name: userID
+          schema:
+            type: string
+            format: uuid # ID пользователя может быть UUID или другим форматом
+          required: true
+          description: Уникальный идентификатор пользователя, для которого загружается аватар.
+      requestBody:
+        description: Файл изображения аватара.
+        required: true
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+              description: Изображение в формате PNG.
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+              description: Изображение в формате JPEG.
+      responses:
+        '200':
+          description: Аватар успешно обновлен.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Аватар пользователя успешно обновлен.
+                  avatarUrl:
+                    type: string
+                    format: url
+                    example: https://example.com/avatars/user123.png
+        '400':
+          $ref: '#/components/responses/BadRequestError' # Например, неверный формат файла или размер.
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError' # Если пользователь с таким ID не найден.
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    get: # Получение аватара пользователя
+      tags:
+        - Пользователи
+      summary: Получение аватара пользователя
+      description: |
+        Возвращает изображение аватара для указанного пользователя.
+        Если аватар не загружен, сервис возвращает изображение аватарки по умолчанию (3.1.3).
+        Доступно **анонимным и авторизованным клиентам**.
+      operationId: getUserAvatar
+      security: [] # Доступно без авторизации
+      parameters:
+        - in: path
+          name: userID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Уникальный идентификатор пользователя, аватар которого нужно получить.
+      responses:
+        '200':
+          description: Аватар пользователя успешно возвращен.
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+                description: Изображение аватара в формате PNG.
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+                description: Изображение аватара в формате JPEG.
+        '404':
+          description: Аватар пользователя или сам пользователь не найдены.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: Аватар пользователя не найден.
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   # --- Ресурсы для предложений по аренде ---
   /offers:
-    get:
+    get: # Список предложений по аренде (5.4)
       tags:
         - Предложения
       summary: Получение списка предложений по аренде
       description: |
         Возвращает список предложений по аренде.
-        Список всегда отсортирован по дате публикации (по убыванию: новые сначала).
-        По умолчанию возвращает не более 60 предложений.
-        Доступно **анонимным и авторизованным клиентам**.
+        Список всегда отсортирован по дате публикации (по убыванию: новые сначала) (5.4.3).
+        По умолчанию возвращает не более 60 предложений (5.4.1).
+        Предложение не содержит список комментариев, только их количество (5.4.4).
+        Доступно **анонимным и авторизованным клиентам** (5.4.5).
       operationId: getOffers
       security: [] # Доступно без авторизации (публичный ресурс).
       parameters:
@@ -697,7 +672,7 @@ paths:
             type: integer
             minimum: 1
             default: 60
-          description: Максимальное количество предложений для возврата.
+          description: Максимальное количество предложений для возврата (5.4.2).
         - in: query
           name: city
           schema:
@@ -706,7 +681,7 @@ paths:
           description: Отфильтровать предложения по указанному городу.
       responses:
         '200':
-          description: Список предложений успешно возвращен.
+          description: Список предложений успешно возвращен (5.4.6).
           content:
             application/json:
               schema:
@@ -716,45 +691,131 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-    post:
+    post: # Создание нового предложения (5.1)
       tags:
         - Предложения
       summary: Создание нового предложения по аренде
       description: |
-        Создает новое предложение по аренде.
-        Доступно только **авторизованным клиентам**.
+        Создает новое предложение по аренде, **включая загрузку изображений**.
+        Доступно только **авторизованным клиентам** (5.1.2).
         Все данные из пункта 3.2 (кроме полей, рассчитываемых сервером) должны быть переданы.
+        Изображения (превью и 6 фото) должны быть отправлены как файлы в `multipart/form-data`.
       operationId: createOffer
       requestBody:
-        description: Данные, необходимые для создания нового предложения.
+        description: Данные, необходимые для создания нового предложения, включая файлы изображений.
         required: true
         content:
-          application/json:
+          multipart/form-data: # Изменяем тип контента на multipart/form-data
             schema:
-              $ref: '#/components/schemas/OfferCreate'
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 10
+                  maxLength: 100
+                  description: Наименование предложения.
+                description:
+                  type: string
+                  minLength: 20
+                  maxLength: 1024
+                  description: Описание предложения.
+                cityId: # Название города для предложения.
+                  type: string
+                  enum: [Paris, Cologne, Brussels, Amsterdam, Hamburg, Dusseldorf]
+                  description: Город, в котором находится предложение. (Выбирается из выпадающего списка).
+                previewImage: # Поле для файла превью изображения
+                  type: string
+                  format: binary
+                  description: Файл превью изображения в формате .jpg или .png.
+                images: # Поле для 6 файлов изображений
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  minItems: 6
+                  maxItems: 6
+                  description: Список из 6 файлов изображений жилья в формате .jpg или .png.
+                isPremium:
+                  type: boolean
+                  description: Признак премиальности предложения.
+                rating:
+                  type: number
+                  format: float
+                  minimum: 1.0
+                  maximum: 5.0
+                  description: Рейтинг предложения. Может быть опущен при создании (по умолчанию 0 или null).
+                  nullable: true
+                type:
+                  $ref: '#/components/schemas/HousingType'
+                  description: Тип жилья.
+                bedrooms:
+                  type: integer
+                  minimum: 1
+                  maximum: 8
+                  description: Количество комнат.
+                maxGuests:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  description: Максимальное количество гостей.
+                price:
+                  type: integer
+                  minimum: 100
+                  maximum: 100000
+                  description: Стоимость аренды за ночь.
+                amenities:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Amenity'
+                  minItems: 1
+                  uniqueItems: true
+                  description: Список удобств.
+                locationLatitude: # Разделяем Location на отдельные поля для FormData
+                  type: number
+                  format: float
+                  description: Широта местоположения предложения.
+                locationLongitude: # Разделяем Location на отдельные поля для FormData
+                  type: number
+                  format: float
+                  description: Долгота местоположения предложения.
+              required: # Обязательные поля для создания предложения
+                - title
+                - description
+                - cityId
+                - previewImage
+                - images
+                - isPremium
+                - type
+                - bedrooms
+                - maxGuests
+                - price
+                - amenities
+                - locationLatitude
+                - locationLongitude
       responses:
         '201':
-          description: Предложение успешно создано. Возвращается полный объект созданного предложения.
+          description: Предложение успешно создано. Возвращается полный объект созданного предложения (5.1.5).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Offer'
         '400':
-          $ref: '#/components/responses/BadRequestError'
+          $ref: '#/components/responses/BadRequestError' # Валидация не пройдена (5.1.4).
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
   /offers/{offerId}:
-    get:
+    get: # Детальная информация по предложению (5.5)
       tags:
         - Предложения
       summary: Получение детальной информации по предложению
       description: |
         Возвращает полную информацию по одному конкретному предложению по аренде.
-        Включает все поля из пункта 3.2.
-        Доступно **анонимным и авторизованным клиентам**.
+        Включает все поля из пункта 3.2, а также флаг принадлежности к избранным (5.5.2).
+        Включает сведения о количестве комментариев, но не сами комментарии (5.5.3).
+        Доступно **анонимным и авторизованным клиентам** (5.5.4).
       operationId: getOfferDetails
       security: [] # Доступно без авторизации.
       parameters:
@@ -777,14 +838,16 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-    patch: # PATCH используется для частичного обновления ресурса.
+    patch: # Редактирование предложения по аренде (5.2)
       tags:
         - Предложения
       summary: Редактирование предложения по аренде
       description: |
-        Редактирует существующее предложение по аренде.
-        Доступно только **авторизованным клиентам**, которые являются **авторами** этого предложения.
+        Редактирует существующее предложение по аренде, **с возможностью обновления изображений**.
+        Доступно только **авторизованным клиентам**, которые являются **авторами** этого предложения (5.2.2, 5.2.7).
         Клиент передает только те поля, которые необходимо обновить.
+        Изображения (превью и 6 фото) могут быть отправлены как файлы в `multipart/form-data`,
+        если их требуется обновить.
       operationId: updateOffer
       parameters:
         - in: path
@@ -795,38 +858,110 @@ paths:
           required: true
           description: Уникальный идентификатор предложения для редактирования.
       requestBody:
-        description: Обновленные данные предложения. Передавать только те поля, которые нужно изменить.
+        description: Обновленные данные предложения, включая опциональные файлы изображений.
         required: true
         content:
-          application/json:
+          multipart/form-data: # Изменяем тип контента на multipart/form-data
             schema:
-              $ref: '#/components/schemas/OfferUpdate'
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 10
+                  maxLength: 100
+                  description: Новое наименование предложения.
+                description:
+                  type: string
+                  minLength: 20
+                  maxLength: 1024
+                  description: Новое описание предложения.
+                cityId:
+                  type: string
+                  enum: [Paris, Cologne, Brussels, Amsterdam, Hamburg, Dusseldorf]
+                  description: Новый идентификатор города. (Выбирается из выпадающего списка).
+                previewImage: # Опциональное поле для файла превью изображения
+                  type: string
+                  format: binary
+                  nullable: true
+                  description: Опциональный файл превью изображения в формате .jpg или .png.
+                images: # Опциональное поле для 6 файлов изображений
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  minItems: 6
+                  maxItems: 6
+                  nullable: true
+                  description: Опциональный список из 6 файлов изображений жилья в формате .jpg или .png. Все 6 должны быть отправлены, если список изменяется.
+                isPremium:
+                  type: boolean
+                  description: Обновленный флаг премиальности.
+                rating:
+                  type: number
+                  format: float
+                  minimum: 1.0
+                  maximum: 5.0
+                  description: Обновленный рейтинг предложения.
+                type:
+                  $ref: '#/components/schemas/HousingType'
+                  description: Новый тип жилья.
+                bedrooms:
+                  type: integer
+                  minimum: 1
+                  maximum: 8
+                  description: Новое количество комнат.
+                maxGuests:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  description: Новое максимальное количество гостей.
+                price:
+                  type: integer
+                  minimum: 100
+                  maximum: 100000
+                  description: Новая стоимость аренды за ночь.
+                amenities:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Amenity'
+                  minItems: 1
+                  uniqueItems: true
+                  description: Обновленный список удобств.
+                locationLatitude: # Разделяем Location на отдельные поля для FormData
+                  type: number
+                  format: float
+                  description: Широта местоположения предложения.
+                locationLongitude: # Разделяем Location на отдельные поля для FormData
+                  type: number
+                  format: float
+                  description: Долгота местоположения предложения.
+              # В PATCH запросе все поля должны быть необязательными.
       responses:
         '200':
-          description: Предложение успешно обновлено. Возвращается полный объект обновленного предложения.
+          description: Предложение успешно обновлено. Возвращается полный объект обновленного предложения (5.2.6).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Offer'
         '400':
-          $ref: '#/components/responses/BadRequestError'
+          $ref: '#/components/responses/BadRequestError' # Валидация не пройдена (5.2.5).
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
-          $ref: '#/components/responses/ForbiddenError' # При попытке отредактировать чужое предложение.
+          $ref: '#/components/responses/ForbiddenError' # При попытке отредактировать чужое предложение (5.2.3).
         '404':
           $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-    delete:
+    delete: # Удаление предложения по аренде (5.3)
       tags:
         - Предложения
       summary: Удаление предложения по аренде
       description: |
         Удаляет предложение по аренде.
-        Доступно только **авторизованным клиентам**, которые являются **авторами** этого предложения.
-        При удалении предложения, все связанные комментарии также удаляются автоматически.
+        Доступно только **авторизованным клиентам**, которые являются **авторами** этого предложения (5.3.1, 5.3.4).
+        При удалении предложения, все связанные комментарии также удаляются автоматически (5.3.3).
       operationId: deleteOffer
       parameters:
         - in: path
@@ -842,21 +977,22 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
-          $ref: '#/components/responses/ForbiddenError' # При попытке удалить чужое предложение.
+          $ref: '#/components/responses/ForbiddenError' # При попытке удалить чужое предложение (5.3.2).
         '404':
           $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
   /offers/{offerId}/comments:
-    get:
+    get: # Список комментариев для предложения (5.6)
       tags:
         - Комментарии
       summary: Получение списка комментариев для предложения
       description: |
-        Возвращает список комментариев для определенного предложения.
-        Список всегда возвращает не более 50 последних комментариев, отсортированных по дате публикации (по убыванию: новые сначала).
-        Доступно **анонимным и авторизованным клиентам**.
+        Возвращает список комментариев для определенного предложения (5.6.1).
+        Список всегда возвращает не более 50 последних комментариев, отсортированных по дате публикации (по убыванию: новые сначала) (5.6.2, 5.6.3).
+        Комментарий в списке представлен набором информации из пункта 3.3 (5.6.4).
+        Доступно **анонимным и авторизованным клиентам** (5.6.5).
       operationId: getOfferComments
       security: [] # Доступно без авторизации.
       parameters:
@@ -887,14 +1023,14 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-    post:
+    post: # Добавление комментария (5.7)
       tags:
         - Комментарии
       summary: Добавление комментария к предложению
       description: |
-        Добавляет новый комментарий к указанному предложению по аренде.
-        Доступно только **авторизованным клиентам**.
-        Удаление и редактирование комментариев не предусмотрено.
+        Добавляет новый комментарий к указанному предложению по аренде (5.7.1).
+        Доступно только **авторизованным клиентам** (5.7.2).
+        Удаление и редактирование комментариев не предусмотрено (5.7.6).
       operationId: addCommentToOffer
       parameters:
         - in: path
@@ -905,7 +1041,7 @@ paths:
           required: true
           description: Уникальный идентификатор предложения, к которому добавляется комментарий.
       requestBody:
-        description: Данные нового комментария (текст и рейтинг).
+        description: Данные нового комментария (текст и рейтинг) (3.3, 5.7.3).
         required: true
         content:
           application/json:
@@ -913,13 +1049,13 @@ paths:
               $ref: '#/components/schemas/CommentCreate'
       responses:
         '201':
-          description: Комментарий успешно добавлен. Возвращается полный объект созданного комментария.
+          description: Комментарий успешно добавлен. Возвращается полный объект созданного комментария (5.7.5).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Comment'
         '400':
-          $ref: '#/components/responses/BadRequestError'
+          $ref: '#/components/responses/BadRequestError' # Валидация не пройдена (5.7.4).
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
@@ -928,14 +1064,15 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
   /cities/{cityName}/premiumOffers:
-    get:
+    get: # Премиальные предложения для города (5.12)
       tags:
         - Предложения
       summary: Получение премиальных предложений для города
       description: |
-        Возвращает список премиальных предложений (с флагом "Premium") для указанного города.
-        Возвращается не более 3 предложений, отсортированных по дате публикации (по убыванию).
-        Доступно **авторизованным и анонимным клиентам**.
+        Возвращает список премиальных предложений (с флагом "Premium") для указанного города (5.12.1).
+        Возвращается не более 3 предложений, отсортированных по дате публикации (по убыванию) (5.12.2, 5.12.3).
+        Список возвращаемых полей для предложения соответствует пункту 5.4.6 (5.12.5).
+        Ресурс доступен **авторизованным и анонимным клиентам** (5.12.4).
       operationId: getPremiumOffersByCity
       security: [] # Доступно без авторизации.
       parameters:
@@ -967,13 +1104,13 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
   /favorites:
-    get:
+    get: # Список избранных предложений (5.13)
       tags:
         - Избранное
       summary: Получение списка избранных предложений
       description: |
-        Возвращает все предложения, которые были добавлены в избранное текущим **авторизованным клиентом**.
-        Список возвращаемых полей предложения соответствует пункту 5.4.6 ТЗ.
+        Возвращает все предложения, которые были добавлены в избранное текущим **авторизованным клиентом** (5.13.1, 5.13.2, 5.13.4).
+        Список возвращаемых полей предложения соответствует пункту 5.4.6 (5.13.3).
       operationId: getFavoriteOffers
       responses:
         '200':
@@ -990,12 +1127,12 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
   /favorites/{offerId}:
-    post:
+    post: # Добавление предложения в избранное (5.14)
       tags:
         - Избранное
       summary: Добавление предложения в избранное
       description: |
-        Добавляет указанное предложение в список избранных для текущего **авторизованного пользователя**.
+        Добавляет указанное предложение в список избранных для текущего **авторизованного пользователя** (5.14.1, 5.14.2).
         Если предложение уже в избранном, может быть возвращена ошибка 409 Conflict.
       operationId: addOfferToFavorites
       parameters:
@@ -1017,23 +1154,17 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           $ref: '#/components/responses/NotFoundError' # Если предложение не найдено.
-        '409': # Conflict, если предложение уже находится в избранном.
-          description: Предложение уже находится в списке избранного пользователя.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                message: Offer already in favorites
+        '409':
+          $ref: '#/components/responses/ConflictError' # Предложение уже находится в списке избранного пользователя.
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-    delete:
+    delete: # Удаление предложения из избранного (5.14)
       tags:
         - Избранное
       summary: Удаление предложения из избранного
       description: |
-        Удаляет указанное предложение из списка избранных для текущего **авторизованного пользователя**.
+        Удаляет указанное предложение из списка избранных для текущего **авторизованного пользователя** (5.14.1, 5.14.2).
       operationId: removeOfferFromFavorites
       parameters:
         - in: path
