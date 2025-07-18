@@ -49,8 +49,8 @@ components:
           description: URL аватара пользователя. Если пользователь не загрузил аватар, сервис вернет ссылку на аватар по умолчанию.
         type:
           type: string
-          enum: [обычный, pro]
-          description: Тип пользователя (обычный или pro) (3.1.1).
+          enum: [default, pro]
+          description: Тип пользователя (3.1.1).
       required:
         - name
         - email
@@ -90,7 +90,7 @@ components:
           nullable: true
         type:
           type: string
-          enum: [обычный, pro]
+          enum: [default, pro]
       required:
         - id
         - name
@@ -197,6 +197,7 @@ components:
           minimum: 1.0
           maximum: 5.0
           description: Рейтинг предложения (число от 1.0 до 5.0, с одним знаком после запятой) (3.2.1).
+          readOnly: true # Рейтинг рассчитывается сервером на основе комментариев.
         type:
           $ref: '#/components/schemas/HousingType' # Ссылка на схему HousingType (3.2.1).
           description: Тип жилья (например, apartment, house).
@@ -433,7 +434,7 @@ paths:
                   description: Пароль пользователя (3.1.1).
                 type:
                   type: string
-                  enum: [обычный, pro]
+                  enum: [default, pro]
                   description: Тип пользователя (3.1.1).
                 avatar: # Поле для файла аватара
                   type: string
@@ -738,13 +739,6 @@ paths:
                 isPremium:
                   type: boolean
                   description: Признак премиальности предложения.
-                rating:
-                  type: number
-                  format: float
-                  minimum: 1.0
-                  maximum: 5.0
-                  description: Рейтинг предложения. Может быть опущен при создании (по умолчанию 0 или null).
-                  nullable: true
                 type:
                   $ref: '#/components/schemas/HousingType'
                   description: Тип жилья.
@@ -896,12 +890,13 @@ paths:
                 isPremium:
                   type: boolean
                   description: Обновленный флаг премиальности.
-                rating:
+                rating: # Рейтинг может быть обновлен только косвенно через комментарии
                   type: number
                   format: float
                   minimum: 1.0
                   maximum: 5.0
                   description: Обновленный рейтинг предложения.
+                  readOnly: true # Рейтинг рассчитывается сервером.
                 type:
                   $ref: '#/components/schemas/HousingType'
                   description: Новый тип жилья.
