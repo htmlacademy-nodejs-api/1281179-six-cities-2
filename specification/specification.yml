@@ -1,0 +1,750 @@
+openapi: 3.0.3
+info:
+  title: API сервиса аренды жилья
+  description: Спецификация REST API для сервиса аренды жилья.
+  version: 1.0.0
+
+servers:
+  - url:  http://localhost:3000/api/v1
+    description: Тестовый сервер
+
+tags:
+  - name: Users
+    description: Регистрация и аутентификация пользователей
+  - name: Offers
+    description: Операции с предложениями по аренде
+  - name: Comments
+    description: Операции с комментариями к предложениям
+  - name: Favorites
+    description: Управление избранными предложениями
+
+paths:
+  /users:
+    post:
+      tags:
+        - Users
+      summary: Создание нового пользователя
+      description: Регистрация нового пользователя в системе. Доступно только для анонимных клиентов.
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: Пользователь успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Ошибка валидации данных
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Пользователь с таким email уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/login:
+    post:
+      tags:
+        - Users
+      summary: Вход в систему
+      description: Аутентификация пользователя и получение токена доступа.
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUserRequest'
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT токен доступа
+        '400':
+          description: Неверный формат запроса
+        '404':
+          description: Пользователь не найден или неверный пароль
+    delete:
+      tags:
+        - Users
+      summary: Выход из системы
+      description: Завершение текущей сессии пользователя (инвалидация токена).
+      operationId: logoutUser
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Успешный выход, нет содержимого в ответе.
+        '401':
+          description: Пользователь не авторизован
+
+  /users/status:
+    get:
+      tags:
+        - Users
+      summary: Проверка статуса пользователя
+      description: Возвращает информацию о текущем авторизованном пользователе.
+      operationId: getUserStatus
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Пользователь авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Пользователь не авторизован
+
+  /offers:
+    get:
+      tags:
+        - Offers
+      summary: Получение списка предложений
+      description: Возвращает список предложений по аренде, отсортированных по дате.
+      operationId: getOffers
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 60
+          description: Количество предложений в ответе.
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OfferSummary'
+    post:
+      tags:
+        - Offers
+      summary: Создание нового предложения
+      description: Создает новое предложение по аренде. Требуется авторизация.
+      operationId: createOffer
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateOfferRequest'
+      responses:
+        '201':
+          description: Предложение успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        '400':
+          description: Ошибка валидации данных
+        '401':
+          description: Пользователь не авторизован
+
+  /offers/{offerId}:
+    get:
+      tags:
+        - Offers
+      summary: Получение детальной информации о предложении
+      description: Возвращает полную информацию по одному предложению.
+      operationId: getOfferById
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Идентификатор предложения
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        '404':
+          description: Предложение не найдено
+    patch:
+      tags:
+        - Offers
+      summary: Редактирование предложения
+      description: |
+        Обновляет информацию о существующем предложении. Редактировать можно только свои предложения.
+        Позволяет обновлять как текстовые данные, так и загружать новые изображения.
+        При отправке `multipart/form-data`, поля со сложной структурой (например, `amenities`) должны быть переданы как JSON-строка.
+      operationId: updateOffer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Идентификатор предложения
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateOfferRequest'
+      responses:
+        '200':
+          description: Предложение успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        '400':
+          description: Ошибка валидации
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Попытка редактирования чужого предложения
+        '404':
+          description: Предложение не найдено
+    delete:
+      tags:
+        - Offers
+      summary: Удаление предложения
+      description: Удаляет предложение. Удалять можно только свои предложения.
+      operationId: deleteOffer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Идентификатор предложения
+      responses:
+        '204':
+          description: Предложение успешно удалено
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Попытка удаления чужого предложения
+        '404':
+          description: Предложение не найдено
+
+  /offers/{offerId}/comments:
+    get:
+      tags:
+        - Comments
+      summary: Получение комментариев к предложению
+      description: Возвращает до 50 последних комментариев для указанного предложения.
+      operationId: getComments
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Идентификатор предложения
+      responses:
+        '200':
+          description: Список комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '404':
+          description: Предложение не найдено
+    post:
+      tags:
+        - Comments
+      summary: Добавление комментария
+      description: Создает новый комментарий к предложению. Требуется авторизация.
+      operationId: createComment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Идентификатор предложения
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCommentRequest'
+      responses:
+        '201':
+          description: Комментарий успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '400':
+          description: Ошибка валидации
+        '401':
+          description: Пользователь не авторизован
+        '404':
+          description: Предложение не найдено
+
+  /cities/{city}/premium-offers:
+    get:
+      tags:
+        - Offers
+      summary: Получение премиальных предложений для города
+      description: Возвращает до 3 премиальных предложений для указанного города.
+      operationId: getPremiumOffers
+      parameters:
+        - name: city
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/City'
+          description: Название города
+      responses:
+        '200':
+          description: Список премиальных предложений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OfferSummary'
+
+  /favorites:
+    get:
+      tags:
+        - Favorites
+      summary: Получение списка избранных предложений
+      operationId: getFavorites
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список избранных предложений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OfferSummary'
+        '401':
+          description: Пользователь не авторизован
+
+  /favorites/{offerId}:
+    post:
+      tags:
+        - Favorites
+      summary: Добавить предложение в избранное
+      operationId: addFavorite
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Предложение добавлено в избранное
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        '401':
+          description: Пользователь не авторизован
+        '404':
+          description: Предложение не найдено
+    delete:
+      tags:
+        - Favorites
+      summary: Удалить предложение из избранного
+      operationId: removeFavorite
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Предложение удалено из избранного
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        '401':
+          description: Пользователь не авторизован
+        '404':
+          description: Предложение не найдено
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # --- User Schemas ---
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор пользователя
+        name:
+          type: string
+          minLength: 1
+          maxLength: 15
+        email:
+          type: string
+          format: email
+        avatarUrl:
+          type: string
+          format: uri
+          description: URL аватара пользователя
+        userType:
+          type: string
+          enum: [default, pro]
+    UserResponse:
+      allOf:
+        - $ref: '#/components/schemas/User'
+    CreateUserRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - userType
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 15
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+          maxLength: 12
+        userType:
+          type: string
+          enum: [default, pro]
+        avatar:
+          type: string
+          format: binary
+          description: Файл аватара пользователя (jpg/png)
+    LoginUserRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    # --- Offer Schemas ---
+    Offer:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор предложения
+        title:
+          type: string
+          minLength: 10
+          maxLength: 100
+        description:
+          type: string
+          minLength: 20
+          maxLength: 1024
+        publicationDate:
+          type: string
+          format: date-time
+        city:
+          $ref: '#/components/schemas/CityWithCoordinates'
+        previewImage:
+          type: string
+          format: uri
+        housingImages:
+          type: array
+          items:
+            type: string
+            format: uri
+          minItems: 6
+          maxItems: 6
+        isPremium:
+          type: boolean
+        isFavorite:
+          type: boolean
+        rating:
+          type: number
+          format: float
+          minimum: 1
+          maximum: 5
+        housingType:
+          type: string
+          enum: [apartment, house, room, hotel]
+        roomCount:
+          type: integer
+          minimum: 1
+          maximum: 8
+        guestCount:
+          type: integer
+          minimum: 1
+          maximum: 10
+        rentCost:
+          type: integer
+          minimum: 100
+          maximum: 100000
+        amenities:
+          type: array
+          items:
+            type: string
+            enum: [Breakfast, "Air conditioning", "Laptop friendly workspace", "Baby seat", Washer, Towels, Fridge]
+        author:
+          $ref: '#/components/schemas/User'
+        commentCount:
+          type: integer
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+    OfferSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        publicationDate:
+          type: string
+          format: date-time
+        city:
+          $ref: '#/components/schemas/City'
+        previewImage:
+          type: string
+          format: uri
+        isPremium:
+          type: boolean
+        isFavorite:
+          type: boolean
+        rating:
+          type: number
+          format: float
+        housingType:
+          type: string
+          enum: [apartment, house, room, hotel]
+        rentCost:
+          type: integer
+        commentCount:
+          type: integer
+    CreateOfferRequest:
+      type: object
+      required:
+        - title
+        - description
+        - city
+        - housingImages
+        - isPremium
+        - housingType
+        - roomCount
+        - guestCount
+        - rentCost
+        - amenities
+        - latitude
+        - longitude
+      properties:
+        title:
+          type: string
+          minLength: 10
+          maxLength: 100
+        description:
+          type: string
+          minLength: 20
+          maxLength: 1024
+        city:
+          $ref: '#/components/schemas/City'
+        previewImage:
+          type: string
+          format: binary
+          description: Файл превью-изображения
+        housingImages:
+          type: array
+          items:
+            type: string
+            format: binary
+          minItems: 6
+          maxItems: 6
+          description: 6 файлов с фотографиями жилья
+        isPremium:
+          type: boolean
+        housingType:
+          type: string
+          enum: [apartment, house, room, hotel]
+        roomCount:
+          type: integer
+          minimum: 1
+          maximum: 8
+        guestCount:
+          type: integer
+          minimum: 1
+          maximum: 10
+        rentCost:
+          type: integer
+          minimum: 100
+          maximum: 100000
+        amenities:
+          type: array
+          items:
+            type: string
+            enum: [Breakfast, "Air conditioning", "Laptop friendly workspace", "Baby seat", Washer, Towels, Fridge]
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+    UpdateOfferRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 10
+          maxLength: 100
+        description:
+          type: string
+          minLength: 20
+          maxLength: 1024
+        city:
+          $ref: '#/components/schemas/City'
+        previewImage:
+          type: string
+          format: binary
+          description: "Новое превью-изображение. Поддерживаемые форматы: image/jpeg, image/png."
+        housingImages:
+          type: array
+          items:
+            type: string
+            format: binary
+          minItems: 6
+          maxItems: 6
+          description: "Новый набор из 6 фотографий жилья. Поддерживаемые форматы: image/jpeg, image/png. Заменяет все старые изображения."
+        isPremium:
+          type: boolean
+        housingType:
+          type: string
+          enum: [apartment, house, room, hotel]
+        roomCount:
+          type: integer
+          minimum: 1
+          maximum: 8
+        guestCount:
+          type: integer
+          minimum: 1
+          maximum: 10
+        rentCost:
+          type: integer
+          minimum: 100
+          maximum: 100000
+        amenities:
+          type: string
+          description: "Список удобств в виде JSON-массива. Например: \"[\"Breakfast\", \"Washer\"]\""
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+
+    # --- Comment Schemas ---
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+          minLength: 5
+          maxLength: 1024
+        publicationDate:
+          type: string
+          format: date-time
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        author:
+          $ref: '#/components/schemas/User'
+    CreateCommentRequest:
+      type: object
+      required:
+        - text
+        - rating
+      properties:
+        text:
+          type: string
+          minLength: 5
+          maxLength: 1024
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+
+    # --- Utility Schemas ---
+    Coordinates:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+    City:
+      type: string
+      enum: [Paris, Cologne, Brussels, Amsterdam, Hamburg, Dusseldorf]
+    CityWithCoordinates:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/City'
+        location:
+          $ref: '#/components/schemas/Coordinates'
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Краткое описание ошибки
+        details:
+          type: object
+          description: Дополнительные детали ошибки (например, поля валидации)
