@@ -5,6 +5,7 @@ import { CommentService } from './comment-service.interface.js';
 import { CommentEntity } from './comment.entity.js';
 import { types } from '@typegoose/typegoose';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
+import { OfferService } from '../offer/offer-service.interface.js';
 
 /**
  * Сервис для работы с комментариями
@@ -16,7 +17,10 @@ export class DefaultCommentService implements CommentService {
     private readonly logger: Logger,
 
     @inject(Components.CommentModel)
-    private readonly commentModel: types.ModelType<CommentEntity>
+    private readonly commentModel: types.ModelType<CommentEntity>,
+
+    @inject(Components.OfferService)
+    private readonly offerService: OfferService
   ) {}
 
   /**
@@ -26,6 +30,7 @@ export class DefaultCommentService implements CommentService {
    */
   public async create(dto: CreateCommentDto): Promise<types.DocumentType<CommentEntity>> {
     const comment = await this.commentModel.create(dto);
+    await this.offerService.incrementCommentCount(dto.offerId);
     this.logger.info(`New comment created: ${comment.text}`);
     return comment;
   }
