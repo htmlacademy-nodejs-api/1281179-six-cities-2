@@ -7,4 +7,5 @@ export interface CityService {
   findCityByCityId(cityId: string): Promise<DocumentType<CityEntity> | null>;
   findCityByCityName(name: string): Promise<DocumentType<CityEntity> | null>;
   findCityByCityNameOrCreate(cityId: string, dto: CreateCityDto): Promise<DocumentType<CityEntity>>;
+  findAllCities(): Promise<DocumentType<CityEntity>[]>;
 }
