@@ -18,6 +18,8 @@ export class UpdateOfferDto {
 
   public rating?: number;
 
+  public ratingCount?: number;
+
   public type?: Property;
 
   public roomCount?: number;

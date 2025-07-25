@@ -70,6 +70,12 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   public isFavorite!: boolean;
 
   @prop({
+    required: true,
+    default: 0
+  })
+  public ratingCount!: number;
+
+  @prop({
     min: [1, 'Минимальный рейтинг 1'],
     max: [5, 'Максимальный рейтинг 5'],
     type: Number,

@@ -64,11 +64,21 @@ export class DefaultOfferService implements OfferService {
     return newOffer;
   }
 
-  findByOfferId(offerId: string): Promise<DocumentType<OfferEntity> | null> {
+  async findByOfferId(offerId: string): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
       .findById(offerId)
       .populate(['city', 'author'])
       .exec();
   }
 
+  async updateRating(offerId: string, rating: number): Promise<DocumentType<OfferEntity> | null> {
+    const offer = await this.offerModel.findById(offerId).populate(['city', 'author']);
+    if (!offer) {
+      return null;
+    }
+    const currentRating = offer.rating ?? 0;
+    offer.ratingCount++;
+    offer.rating = (currentRating + rating) / (offer.ratingCount);
+    return offer.save();
+  }
 }
