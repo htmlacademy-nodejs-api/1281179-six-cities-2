@@ -22,7 +22,10 @@ export class DefaultOfferService implements OfferService {
   }
 
   findByOfferId(offerId: string): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findById(offerId).exec();
+    return this.offerModel
+      .findById(offerId)
+      .populate(['city', 'author'])
+      .exec();
   }
 
 }

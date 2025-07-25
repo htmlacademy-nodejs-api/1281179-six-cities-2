@@ -1,77 +1,141 @@
 import { defaultClasses, getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose';
-import { Cities } from '../../types/cities.enum.js';
 import { ConvenienceType } from '../../types/conveniences.type.js';
 import { Property } from '../../types/property.type.js';
-import { CityEntity } from '../city/city.entity.js';
 import { UserEntity } from '../user/user.entity.js';
+import { Types } from 'mongoose';
+import { CityEntity } from '../city/city.entity.js';
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export interface OfferEntity extends defaultClasses.Base {}
-
-@modelOptions({ schemaOptions: { collection: 'offers', timestamps: true }})
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+@modelOptions({
+  schemaOptions: {
+    collection: 'offers',
+    timestamps: true
+  }
+})
 export class OfferEntity extends defaultClasses.TimeStamps {
-  @prop()
-  public name: string;
+  @prop({
+    type: () => Types.ObjectId,
+    required: true,
+    default: () => new Types.ObjectId()
+  })
+  public _id: Types.ObjectId;
 
-  @prop()
-  public description: string;
+  @prop({
+    required: true,
+    trim: true,
+    minLength: [10, 'Название должно быть минимум 10 символов'],
+    maxLength: [100, 'Название должно быть максимум 100 символов']
+  })
+  public name!: string;
 
-
-  @prop()
-  public publicationDate: string;
+  @prop({
+    required: true,
+    trim: true,
+    minLength: [20, 'Описание должно быть минимум 20 символов'],
+    maxLength: [1024, 'Описание должно быть максимум 1024 символа']
+  })
+  public description!: string;
 
   @prop({
     ref: CityEntity,
     required: true,
-    _id: false
   })
-  public city: Cities;
-
-  @prop()
-  public previewImage: string;
-
-  @prop()
-  public photos: string[];
-
-  @prop()
-  public isPremium: boolean;
-
-  @prop()
-  public isFavorite: boolean;
-
-  @prop()
-  public rating: number;
+  public city!: Ref<CityEntity>;
 
   @prop({
-    enum: Property,
     required: true,
+    trim: true
   })
-  public type: Property;
+  public previewImage!: string;
 
-  @prop()
-  public roomCount: number;
+  @prop({
+    required: true,
+    type: () => [String],
+    validate: {
+      validator: (v: string[]) => v.length === 6,
+      message: 'Необходимо предоставить ровно 6 фотографий'
+    }
+  })
+  public photos!: string[];
 
-  @prop()
-  public guestCount: number;
+  @prop({
+    required: true,
+    default: false
+  })
+  public isPremium!: boolean;
 
-  @prop()
-  public cost: number;
+  @prop({
+    required: true,
+    default: false
+  })
+  public isFavorite!: boolean;
 
-  @prop()
-  public conveniences: ConvenienceType[];
+  @prop({
+    min: [1, 'Минимальный рейтинг 1'],
+    max: [5, 'Максимальный рейтинг 5'],
+    type: Number,
+    default: null
+  })
+  public rating!: number | null;
+
+  @prop({
+    required: true,
+    type: () => String,
+    enum: Property
+  })
+  public type!: Property;
+
+  @prop({
+    required: true,
+    min: [1, 'Минимальное количество комнат 1'],
+    max: [8, 'Максимальное количество комнат 8']
+  })
+  public roomCount!: number;
+
+  @prop({
+    required: true,
+    min: [1, 'Минимальное количество гостей 1'],
+    max: [10, 'Максимальное количество гостей 10']
+  })
+  public guestCount!: number;
+
+  @prop({
+    required: true,
+    min: [100, 'Минимальная стоимость 100'],
+    max: [100000, 'Максимальная стоимость 100000']
+  })
+  public cost!: number;
+
+  @prop({
+    required: true,
+    type: () => [String],
+    enum: ConvenienceType,
+    validate: {
+      validator: (v: ConvenienceType[]) => v.length > 0,
+      message: 'Необходимо указать хотя бы одно удобство'
+    }
+  })
+  public conveniences!: ConvenienceType[];
 
   @prop({
     ref: UserEntity,
-    required: true,
+    required: true
   })
-  public user: Ref<UserEntity> ;
+  public author!: Ref<UserEntity>;
 
-  @prop()
-  public commentCount: number;
+  @prop({
+    default: 0
+  })
+  public commentCount!: number;
 
-  @prop()
-  public coordinates: [number, number];
+  @prop({
+    required: true,
+    type: () => [Number],
+    validate: {
+      validator: (v: number[]) => v.length === 2,
+      message: 'Координаты должны быть представлены широтой и долготой (2 числа)'
+    }
+  })
+  public coordinates!: [number, number];
 }
 
 export const OfferModel = getModelForClass(OfferEntity);

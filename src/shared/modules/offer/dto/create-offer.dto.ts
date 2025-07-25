@@ -1,21 +1,34 @@
 import { ConvenienceType, Property } from '../../../types/index.js';
+import { Types } from 'mongoose';
 
 export class CreateOfferDto {
-  name: string;
-  description: string;
-  publicationDate: string;
-  city: string;
-  previewImage: string;
-  photos: string[];
-  isPremium: boolean;
-  isFavorite: boolean;
-  rating: number;
-  type: Property;
-  roomCount: number;
-  guestCount: number;
-  cost: number;
-  conveniences: ConvenienceType[];
-  user: string;
-  commentCount: number;
-  coordinates: [number, number];
+  public name!: string;
+
+  public description!: string;
+
+  public city!: Types.ObjectId;
+
+  public previewImage!: string;
+
+  public photos!: string[];
+
+  public isPremium!: boolean;
+
+  public isFavorite!: boolean;
+
+  public rating?: number;
+
+  public type!: Property;
+
+  public roomCount!: number;
+
+  public guestCount!: number;
+
+  public cost!: number;
+
+  public conveniences!: ConvenienceType[];
+
+  public author!: Types.ObjectId;
+
+  public coordinates!: [number, number];
 }
