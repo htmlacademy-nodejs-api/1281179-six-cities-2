@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ext": ".ts,.js,.json",
+  "ignore": [],
+  "exec": "npm run build && node ./dist/main.rest.js | pino-pretty --colorize -t SYS:standard"
+}
