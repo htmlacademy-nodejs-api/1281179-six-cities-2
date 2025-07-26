@@ -8,6 +8,7 @@ import { Logger } from '../../libs/logger/index.js';
 
 @injectable()
 export class DefaultCityService implements CityService {
+  private readonly CITIES_LIMIT = 6;
 
   constructor(
     @inject(Components.Logger)
@@ -38,5 +39,9 @@ export class DefaultCityService implements CityService {
     }
 
     return this.createCity(dto);
+  }
+
+  async findAllCities(): Promise<DocumentType<CityEntity>[]> {
+    return this.cityModel.find().limit(this.CITIES_LIMIT).exec();
   }
 }
