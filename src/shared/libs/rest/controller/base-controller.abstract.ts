@@ -1,22 +1,18 @@
 import { Response, Router } from 'express';
 import { Controller } from './controller.interface.js';
 import { Route } from '../types/route.interface.js';
-import { inject, injectable } from 'inversify';
 import { Logger } from '../../logger/index.js';
-import { Components } from '../../../types/index.js';
 import { StatusCodes } from 'http-status-codes';
 
 const DEFAULT_CONTENT_TYPE = 'application/json';
 
-@injectable()
 export abstract class BaseController implements Controller {
   private readonly _router: Router;
 
   constructor(
-    @inject(Components.Logger) protected readonly logger: Logger,
-    router: Router
+    protected readonly logger: Logger,
   ) {
-    this._router = router;
+    this._router = Router();
   }
 
   get router() {
