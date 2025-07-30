@@ -8,8 +8,9 @@ import { RestSchema, Config, RestConfig } from './shared/libs/config/index.js';
 import { DatabaseClient, MongoDatabaseClient } from './shared/libs/database-client/index.js';
 import { UserEntity, UserModel, UserService, DefaultUserService } from './shared/modules/user/index.js';
 import { types } from '@typegoose/typegoose';
-import { CityEntity, CityModel, CityService, DefaultCityService } from './shared/modules/city/index.js';
+import { CityController, CityEntity, CityModel, CityService, DefaultCityService } from './shared/modules/city/index.js';
 import { CommentEntity, CommentModel, CommentService, DefaultCommentService } from './shared/modules/comment/index.js';
+import { Controller } from './shared/libs/rest/index.js';
 
 function bootstrap() {
   const container = new Container();
@@ -23,6 +24,7 @@ function bootstrap() {
   container.bind<types.ModelType<CityEntity>>(Components.CityModel).toConstantValue(CityModel);
   container.bind<CommentService>(Components.CommentService).to(DefaultCommentService).inSingletonScope();
   container.bind<types.ModelType<CommentEntity>>(Components.CommentModel).toConstantValue(CommentModel);
+  container.bind<Controller>(Components.CityController).to(CityController).inSingletonScope();
 
   const restApp = container.get<RestApplication>(Components.RestApplication);
   restApp.init();
