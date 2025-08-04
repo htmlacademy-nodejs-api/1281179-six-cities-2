@@ -6,6 +6,9 @@ import { HttpMethod } from '../../libs/rest/index.js';
 import { Request, Response } from 'express';
 import { CityService } from './city-service.interface.js';
 import { CreateCityDto } from './dto/create-city.dto.js';
+import { CityRdo } from './rdo/city.rdo.js';
+import { fillDTO } from '../../helpers/common.js';
+import { Cities } from '../../types/cities.enum.js';
 
 @injectable()
 export class CityController extends BaseController {
@@ -37,7 +40,8 @@ export class CityController extends BaseController {
   public index = async (_req: Request, res: Response): Promise<void> => {
     try {
       const cities = await this.cityService.findAllCities();
-      this.ok(res, cities);
+      const responseData = fillDTO(CityRdo, cities);
+      this.ok(res, responseData);
     } catch (error) {
       this.logger.error('Failed to fetch cities:', error);
       this.internalServerError(res, { error: 'Failed to fetch cities' });
@@ -53,9 +57,16 @@ export class CityController extends BaseController {
         return;
       }
 
+      const cityName = req.body.name?.toUpperCase() as keyof typeof Cities;
+
+      if (!Cities[cityName]) {
+        this.badRequest(res, { error: 'Invalid city name' });
+        return;
+      }
+
       const cityDto: CreateCityDto = {
         ...req.body,
-        name: req.body.name?.toLowerCase()
+        name: Cities[cityName as keyof typeof Cities]
       };
 
       this.logger.info('Creating city with data:', cityDto);
