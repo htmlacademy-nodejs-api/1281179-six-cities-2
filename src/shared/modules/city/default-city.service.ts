@@ -44,4 +44,12 @@ export class DefaultCityService implements CityService {
   async findAllCities(): Promise<DocumentType<CityEntity>[]> {
     return this.cityModel.find().limit(this.CITIES_LIMIT).exec();
   }
+
+  async deleteCityById(id: string): Promise<DocumentType<CityEntity> | null> {
+    return this.cityModel.findByIdAndDelete(id).exec();
+  }
+
+  async deleteCityByName(name: string): Promise<DocumentType<CityEntity> | null> {
+    return this.cityModel.findOneAndDelete({ name: name.toUpperCase() }).exec();
+  }
 }

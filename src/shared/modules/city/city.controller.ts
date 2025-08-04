@@ -4,12 +4,16 @@ import { Components } from '../../types/components.enum.js';
 import { Logger } from '../../libs/logger/index.js';
 import { HttpMethod } from '../../libs/rest/index.js';
 import { Request, Response } from 'express';
+import { CityService } from './city-service.interface.js';
+import { CreateCityDto } from './dto/create-city.dto.js';
 
 @injectable()
 export class CityController extends BaseController {
   constructor(
     @inject(Components.Logger)
     protected readonly logger: Logger,
+    @inject(Components.CityService)
+    private readonly cityService: CityService,
   ) {
     super(logger);
     this.logger.info('Register routes for CityController');
@@ -23,13 +27,61 @@ export class CityController extends BaseController {
       method: HttpMethod.POST,
       handler: this.create,
     });
+    this.addRoute({
+      path: '/:id',
+      method: HttpMethod.DELETE,
+      handler: this.delete,
+    });
   }
 
-  public async index(_req: Request, res: Response): Promise<void> {
-    this.ok(res, 'index');
-  }
+  public index = async (_req: Request, res: Response): Promise<void> => {
+    try {
+      const cities = await this.cityService.findAllCities();
+      this.ok(res, cities);
+    } catch (error) {
+      this.logger.error('Failed to fetch cities:', error);
+      this.internalServerError(res, { error: 'Failed to fetch cities' });
+    }
+  };
 
-  public async create(_req: Request, res: Response): Promise<void> {
-    this.created(res, 'create');
-  }
+  public create = async (req: Request, res: Response): Promise<void> => {
+    try {
+      this.logger.info('Received create city request', { body: req.body });
+
+      if (!req.body) {
+        this.badRequest(res, { error: 'Request body is required' });
+        return;
+      }
+
+      const cityDto: CreateCityDto = {
+        ...req.body,
+        name: req.body.name?.toLowerCase()
+      };
+
+      this.logger.info('Creating city with data:', cityDto);
+      const city = await this.cityService.createCity(cityDto);
+
+      this.logger.info('City created successfully:', city);
+      this.created(res, city);
+    } catch (error) {
+      this.logger.error('Failed to create city:', error);
+
+      if (error instanceof Error && error.message.includes('duplicate key')) {
+        this.conflict(res, { error: 'City with this name already exists' });
+      } else {
+        this.internalServerError(res, { error: 'Failed to create city' });
+      }
+    }
+  };
+
+  public delete = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const city = await this.cityService.deleteCityById(id);
+      this.ok(res, city);
+    } catch (error) {
+      this.logger.error('Failed to delete city:', error);
+      this.internalServerError(res, { error: 'Failed to delete city' });
+    }
+  };
 }

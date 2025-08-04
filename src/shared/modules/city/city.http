@@ -1,0 +1,17 @@
+### GET all cities
+GET http://localhost:3000/cities
+### POST create city
+POST http://localhost:3000/cities
+Content-Type: application/json
+
+{
+  "name": "PARIS",
+  "coords": {
+    "latitude": 48.85661,
+    "longitude": 2.351499
+  }
+}
+
+### DELETE city by id
+DELETE http://localhost:3000/cities/688a51fc7838743e7b0ccc25
+### DELETE city by name

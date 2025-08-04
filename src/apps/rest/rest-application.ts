@@ -34,6 +34,10 @@ export class RestApplication {
     await this.databaseClient.connect(uri);
   }
 
+  private async _initMiddleware(): Promise<void> {
+    this.server.use(express.json());
+  }
+
   private async _initControllers(): Promise<void> {
     this.server.use('/cities', this.cityController.router);
   }
@@ -45,13 +49,17 @@ export class RestApplication {
 
   public async init() {
     this.logger.info('Initializing the application');
+
     await this._initDB();
     this.logger.info('DB initialized');
-    this.logger.info('Try to init server...');
+
+    await this._initMiddleware();
+    this.logger.info('Middleware initialized');
+
     await this._initControllers();
     this.logger.info('Controllers initialized');
+
     await this._initServer();
     this.logger.info(`Server started on ${this.config.get('PORT')} port`);
   }
 }
-
