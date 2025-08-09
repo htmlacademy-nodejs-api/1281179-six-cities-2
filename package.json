@@ -11,6 +11,7 @@
   "scripts": {
     "start": "npm run build && node ./dist/main.rest.js",
     "start:dev": "nodemon --config nodemon.json",
+    "start:debug": "npm run build && node --inspect=9229 ./dist/main.rest.js | pino-pretty --colorize -t SYS:standard",
     "watch": "npm run build && node --watch ./dist/main.rest.js | pino-pretty --colorize -t SYS:standard",
     "build": "npm run clean && npm run compile",
     "lint": "eslint src/ --ext .ts",

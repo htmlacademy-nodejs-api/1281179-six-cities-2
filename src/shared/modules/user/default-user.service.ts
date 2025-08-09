@@ -41,4 +41,8 @@ export class DefaultUserService implements UserService {
   public async findUserById(id: string): Promise<DocumentType<UserEntity> | null> {
     return this.userModel.findById(id).exec();
   }
+
+  public findAll(): Promise<DocumentType<UserEntity>[]> {
+    return this.userModel.find().exec();
+  }
 }

@@ -12,6 +12,7 @@ import { CityController, CityEntity, CityModel, CityService, DefaultCityService 
 import { CommentEntity, CommentModel, CommentService, DefaultCommentService } from './shared/modules/comment/index.js';
 import { Controller } from './shared/libs/rest/index.js';
 import { OfferController, OfferEntity, OfferModel, OfferService, DefaultOfferService } from './shared/modules/offer/index.js';
+import { UserController } from './shared/modules/user/user.controller.js';
 
 function bootstrap() {
   const container = new Container();
@@ -29,6 +30,7 @@ function bootstrap() {
   container.bind<OfferService>(Components.OfferService).to(DefaultOfferService).inSingletonScope();
   container.bind<types.ModelType<OfferEntity>>(Components.OfferModel).toConstantValue(OfferModel);
   container.bind<Controller>(Components.OfferController).to(OfferController).inSingletonScope();
+  container.bind<Controller>(Components.UserController).to(UserController).inSingletonScope();
 
   const restApp = container.get<RestApplication>(Components.RestApplication);
   restApp.init();
