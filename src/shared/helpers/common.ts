@@ -17,3 +17,10 @@ export function getRandomItem<T>(items: T[]): T {
 export function fillDTO<T, V>(dto: ClassConstructor<T>, plainObject: V): T {
   return plainToInstance(dto, plainObject, { excludeExtraneousValues: true });
 }
+
+export function createErrorObject(message: string, detail?: string) {
+  return {
+    error: message,
+    detail,
+  };
+}
