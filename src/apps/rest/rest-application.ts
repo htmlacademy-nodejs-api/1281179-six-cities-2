@@ -4,7 +4,7 @@ import { Logger } from '../../shared/libs/logger/index.js';
 import { DatabaseClient, getMongoDBURI } from '../../shared/libs/database-client/index.js';
 import { Components } from '../../shared/types/index.js';
 import express, { Express } from 'express';
-import { Controller } from '../../shared/libs/rest/index.js';
+import { Controller, ExceptionFilter } from '../../shared/libs/rest/index.js';
 
 @injectable()
 export class RestApplication {
@@ -22,6 +22,8 @@ export class RestApplication {
     private readonly offerController: Controller,
     @inject(Components.UserController)
     private readonly userController: Controller,
+    @inject(Components.ExceptionFilter)
+    private readonly exceptionFilter: ExceptionFilter,
   ) {
     this.server = express();
   }
@@ -53,6 +55,10 @@ export class RestApplication {
     this.server.listen(port);
   }
 
+  private async _initExceptionFilters(): Promise<void> {
+    this.server.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+  }
+
   public async init() {
     this.logger.info('Initializing the application');
 
@@ -64,6 +70,9 @@ export class RestApplication {
 
     await this._initControllers();
     this.logger.info('Controllers initialized');
+
+    await this._initExceptionFilters();
+    this.logger.info('Exception filters initialized');
 
     await this._initServer();
     this.logger.info(`Server started on ${this.config.get('PORT')} port`);
