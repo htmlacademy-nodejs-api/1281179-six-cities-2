@@ -11,6 +11,8 @@ import { CreateOfferDto } from './dto/create-offer.dto.js';
 import { CityService } from '../city/city-service.interface.js';
 import { Cities } from '../../types/cities.enum.js';
 import { UserService } from '../user/user-service.interface.js';
+import { HttpError } from '../../libs/rest/errors/http-error.js';
+import { StatusCodes } from 'http-status-codes';
 
 @injectable()
 export class OfferController extends BaseController {
@@ -57,6 +59,9 @@ export class OfferController extends BaseController {
   public show = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const offer = await this.offerService.findByOfferId(id);
+    if (!offer) {
+      throw new HttpError(StatusCodes.NOT_FOUND, 'Offer not found', 'OfferController');
+    }
     const responseData = fillDTO(OfferRdo, offer);
     this.ok(res, responseData);
   };
@@ -65,27 +70,23 @@ export class OfferController extends BaseController {
     const { city, author, ...rest } = req.body ?? {};
 
     if (!city) {
-      this.badRequest(res, { error: 'City name is required in field "city"' });
-      return;
+      throw new HttpError(StatusCodes.BAD_REQUEST, 'City name is required in field "city"', 'OfferController');
     }
 
     const cityName = city.toUpperCase() as keyof typeof Cities;
 
     if (!Cities[cityName]) {
-      this.badRequest(res, { error: `City with name "${city}" not found` });
-      return;
+      throw new HttpError(StatusCodes.BAD_REQUEST, `City with name "${city}" not found`, 'OfferController');
     }
 
     const existedCity = await this.cityService.findCityByCityName(Cities[cityName]);
     if (!existedCity) {
-      this.badRequest(res, { error: `City with name "${city}" not found` });
-      return;
+      throw new HttpError(StatusCodes.BAD_REQUEST, `City with name "${city}" not found`, 'OfferController');
     }
 
     const existedUser = await this.userService.findUserById(author);
     if (!existedUser) {
-      this.badRequest(res, { error: `User with id "${author}" not found` });
-      return;
+      throw new HttpError(StatusCodes.BAD_REQUEST, `User with id "${author}" not found`, 'OfferController');
     }
 
     const offerDTO: CreateOfferDto = {

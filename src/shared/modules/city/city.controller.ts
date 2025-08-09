@@ -2,8 +2,9 @@ import { BaseController } from '../../libs/rest/controller/base-controller.abstr
 import { inject, injectable } from 'inversify';
 import { Components } from '../../types/components.enum.js';
 import { Logger } from '../../libs/logger/index.js';
-import { HttpMethod } from '../../libs/rest/index.js';
+import { HttpError, HttpMethod } from '../../libs/rest/index.js';
 import { Request, RequestHandler, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { CityService } from './city-service.interface.js';
 import { CreateCityDto } from './dto/create-city.dto.js';
 import { CityRdo } from './rdo/city.rdo.js';
@@ -38,61 +39,48 @@ export class CityController extends BaseController {
   }
 
   public index = async (_req: Request, res: Response): Promise<void> => {
-    try {
-      const cities = await this.cityService.findAllCities();
-      const responseData = fillDTO(CityRdo, cities);
-      this.ok(res, responseData);
-    } catch (error) {
-      this.logger.error('Failed to fetch cities:', error);
-      this.internalServerError(res, { error: 'Failed to fetch cities' });
-    }
+    const cities = await this.cityService.findAllCities();
+    const responseData = fillDTO(CityRdo, cities);
+    this.ok(res, responseData);
   };
 
   public create:RequestHandler<unknown, CityRdo[], CreateCityDto> = async (req, res) => {
+    this.logger.info('Received create city request', { body: req.body });
+
+    if (!req.body) {
+      throw new HttpError(StatusCodes.BAD_REQUEST, 'Request body is required', 'CityController');
+    }
+
+    const cityName = req.body.name?.toUpperCase() as keyof typeof Cities;
+
+    if (!Cities[cityName]) {
+      throw new HttpError(StatusCodes.BAD_REQUEST, 'Invalid city name', 'CityController');
+    }
+
+    const cityDto: CreateCityDto = {
+      ...req.body,
+      name: Cities[cityName as keyof typeof Cities]
+    };
+
+    this.logger.info('Creating city with data:', cityDto);
     try {
-      this.logger.info('Received create city request', { body: req.body });
-
-      if (!req.body) {
-        this.badRequest(res, { error: 'Request body is required' });
-        return;
-      }
-
-      const cityName = req.body.name?.toUpperCase() as keyof typeof Cities;
-
-      if (!Cities[cityName]) {
-        this.badRequest(res, { error: 'Invalid city name' });
-        return;
-      }
-
-      const cityDto: CreateCityDto = {
-        ...req.body,
-        name: Cities[cityName as keyof typeof Cities]
-      };
-
-      this.logger.info('Creating city with data:', cityDto);
       const city = await this.cityService.createCity(cityDto);
-
       this.logger.info('City created successfully:', city);
       this.created(res, city);
     } catch (error) {
-      this.logger.error('Failed to create city:', error);
-
       if (error instanceof Error && error.message.includes('duplicate key')) {
-        this.conflict(res, { error: 'City with this name already exists' });
-      } else {
-        this.internalServerError(res, { error: 'Failed to create city' });
+        throw new HttpError(StatusCodes.CONFLICT, 'City with this name already exists', 'CityController');
       }
+      throw error;
     }
   };
 
   public delete = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { id } = req.params;
-      const city = await this.cityService.deleteCityById(id);
-      this.ok(res, city);
-    } catch (error) {
-      this.logger.error('Failed to delete city:', error);
-      this.internalServerError(res, { error: 'Failed to delete city' });
+    const { id } = req.params;
+    const city = await this.cityService.deleteCityById(id);
+    if (!city) {
+      throw new HttpError(StatusCodes.NOT_FOUND, 'City not found', 'CityController');
     }
+    this.ok(res, city);
   };
 }
