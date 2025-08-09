@@ -24,7 +24,7 @@ export class UserController extends BaseController {
   ) {
     super(logger);
     this.addRoute({
-      path: '/',
+      path: '/register',
       method: HttpMethod.POST,
       handler: this.create
     });
@@ -32,6 +32,11 @@ export class UserController extends BaseController {
       path: '/',
       method: HttpMethod.GET,
       handler: this.index
+    });
+    this.addRoute({
+      path: '/login',
+      method: HttpMethod.POST,
+      handler: this.login
     });
   }
 
@@ -56,5 +61,21 @@ export class UserController extends BaseController {
 
     const userEntity = fillDTO(UserRdo, user);
     this.created(res, userEntity);
+  };
+
+  public login: RequestHandler<unknown, UserResponse, UserRequest> = async (req, res) => {
+    const userDTO: CreateUserDto = req.body;
+
+    const existingUser = await this.userService.findByEmail(userDTO.email);
+    if (!existingUser) {
+      throw new HttpError(StatusCodes.NOT_FOUND, 'User not found', 'UserController');
+    }
+
+    const isPasswordCorrect = await this.userService.comparePassword(userDTO.password, existingUser.getPassword() ?? '', this.config.get('SALT'));
+    if (!isPasswordCorrect) {
+      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Invalid password', 'UserController');
+    }
+
+    this.ok(res, { token: '123456' });
   };
 }
