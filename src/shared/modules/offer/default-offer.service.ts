@@ -61,7 +61,7 @@ export class DefaultOfferService implements OfferService {
   async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
     const newOffer = await this.offerModel.create(dto);
     this.logger.info(`New offer created: ${newOffer.name}`);
-    return newOffer;
+    return this.offerModel.findById(newOffer._id).populate(['city', 'author']).exec() as unknown as DocumentType<OfferEntity>;
   }
 
   async findByOfferId(offerId: string): Promise<DocumentType<OfferEntity> | null> {

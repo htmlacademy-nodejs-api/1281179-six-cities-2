@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 import { Components } from '../../types/components.enum.js';
 import { Logger } from '../../libs/logger/index.js';
 import { HttpMethod } from '../../libs/rest/index.js';
-import { Request, Response } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import { CityService } from './city-service.interface.js';
 import { CreateCityDto } from './dto/create-city.dto.js';
 import { CityRdo } from './rdo/city.rdo.js';
@@ -48,7 +48,7 @@ export class CityController extends BaseController {
     }
   };
 
-  public create = async (req: Request, res: Response): Promise<void> => {
+  public create:RequestHandler<unknown, CityRdo[], CreateCityDto> = async (req, res) => {
     try {
       this.logger.info('Received create city request', { body: req.body });
 

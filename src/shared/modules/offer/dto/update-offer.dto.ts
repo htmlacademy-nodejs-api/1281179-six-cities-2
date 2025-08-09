@@ -18,7 +18,7 @@ export class UpdateOfferDto {
 
   public rating?: number;
 
-  public ratingCount?: number;
+  // ratingCount управляется сервером, не должен приходить с клиента
 
   public type?: Property;
 
@@ -30,7 +30,7 @@ export class UpdateOfferDto {
 
   public conveniences?: ConvenienceType[];
 
-  public author?: Types.ObjectId;
+  // author ставится на сервере из контекста пользователя, не должен обновляться клиентом
 
   public coordinates?: [number, number];
 }

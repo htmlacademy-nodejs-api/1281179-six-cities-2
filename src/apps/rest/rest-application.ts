@@ -18,6 +18,8 @@ export class RestApplication {
     private readonly databaseClient: DatabaseClient,
     @inject(Components.CityController)
     private readonly cityController: Controller,
+    @inject(Components.OfferController)
+    private readonly offerController: Controller,
   ) {
     this.server = express();
   }
@@ -40,6 +42,7 @@ export class RestApplication {
 
   private async _initControllers(): Promise<void> {
     this.server.use('/cities', this.cityController.router);
+    this.server.use('/offers', this.offerController.router);
   }
 
   private async _initServer(): Promise<void> {

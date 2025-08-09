@@ -1,4 +1,4 @@
-import { ConvenienceType, Property } from '../../../types/index.js';
+import { Cities, ConvenienceType, Property } from '../../../types/index.js';
 import { Types } from 'mongoose';
 
 export class CreateOfferDto {
@@ -6,7 +6,7 @@ export class CreateOfferDto {
 
   public description!: string;
 
-  public city!: Types.ObjectId;
+  public city!: Cities;
 
   public previewImage!: string;
 

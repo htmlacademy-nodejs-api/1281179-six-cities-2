@@ -1,0 +1,38 @@
+### Create offer
+POST http://localhost:3000/offers
+Content-Type: application/json
+
+{
+  "name": "Spacious apartment near center",
+  "description": "Very nice place with modern furniture near the city center.",
+  "city": "Paris",
+  "previewImage": "https://example.com/preview.jpg",
+  "photos": [
+    "https://example.com/p1.jpg",
+    "https://example.com/p2.jpg",
+    "https://example.com/p3.jpg",
+    "https://example.com/p4.jpg",
+    "https://example.com/p5.jpg",
+    "https://example.com/p6.jpg"
+  ],
+  "isPremium": true,
+  "isFavorite": false,
+  "rating": 4.5,
+  "type": "apartment",
+  "roomCount": 3,
+  "guestCount": 4,
+  "cost": 1200,
+  "conveniences": ["Breakfast", "Air conditioning", "Towels"],
+  "author": "66a1b2c3d4e5f67890123457",
+  "coordinates": [48.8566, 2.3522]
+}
+
+### Get all offers
+GET http://localhost:3000/offers
+Content-Type: application/json
+
+### Get offer by id
+GET http://localhost:3000/offers/66a1b2c3d4e5f67890123457
+Content-Type: application/json
+
+

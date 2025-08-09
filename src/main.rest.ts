@@ -11,6 +11,7 @@ import { types } from '@typegoose/typegoose';
 import { CityController, CityEntity, CityModel, CityService, DefaultCityService } from './shared/modules/city/index.js';
 import { CommentEntity, CommentModel, CommentService, DefaultCommentService } from './shared/modules/comment/index.js';
 import { Controller } from './shared/libs/rest/index.js';
+import { OfferController, OfferEntity, OfferModel, OfferService, DefaultOfferService } from './shared/modules/offer/index.js';
 
 function bootstrap() {
   const container = new Container();
@@ -25,6 +26,9 @@ function bootstrap() {
   container.bind<CommentService>(Components.CommentService).to(DefaultCommentService).inSingletonScope();
   container.bind<types.ModelType<CommentEntity>>(Components.CommentModel).toConstantValue(CommentModel);
   container.bind<Controller>(Components.CityController).to(CityController).inSingletonScope();
+  container.bind<OfferService>(Components.OfferService).to(DefaultOfferService).inSingletonScope();
+  container.bind<types.ModelType<OfferEntity>>(Components.OfferModel).toConstantValue(OfferModel);
+  container.bind<Controller>(Components.OfferController).to(OfferController).inSingletonScope();
 
   const restApp = container.get<RestApplication>(Components.RestApplication);
   restApp.init();
