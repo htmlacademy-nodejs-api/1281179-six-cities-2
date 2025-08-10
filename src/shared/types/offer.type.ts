@@ -23,7 +23,7 @@ export type Offer = {
     coordinates: [number, number]; // Координаты предложения для аренды. Обязательное. Координаты представлены широтой и долготой.
 }
 
-export type UserResponse = {
+export type OfferResponse = {
     id: number;
     name: string; // Наименование. Обязательное. Мин. длин 10 символов, макс. длина 100;
     description: string; // Описание предложения. Обязательное. Мин. длина 20 символов, макс. длина 1024 символа;

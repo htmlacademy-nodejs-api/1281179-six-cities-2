@@ -5,7 +5,7 @@ import { UserEntity } from './user.entity.js';
 import { inject, injectable } from 'inversify';
 import { Components } from '../../types/components.enum.js';
 import { Logger } from '../../libs/logger/index.js';
-
+import { createSHA256 } from '../../helpers/index.js';
 @injectable()
 export class DefaultUserService implements UserService {
   constructor(
@@ -16,7 +16,7 @@ export class DefaultUserService implements UserService {
     private readonly userModel: types.ModelType<UserEntity>
   ) {}
 
-  public async create(dto: CreateUserDto, salt: string) {
+  public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const user = new UserEntity(dto);
     user.setPassword(dto.password, salt);
     const result = await this.userModel.create(user);
@@ -36,5 +36,17 @@ export class DefaultUserService implements UserService {
     }
 
     return this.create(dto, salt);
+  }
+
+  public async findUserById(id: string): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findById(id).exec();
+  }
+
+  public findAll(): Promise<DocumentType<UserEntity>[]> {
+    return this.userModel.find().exec();
+  }
+
+  public async comparePassword(password: string, hash: string, salt: string): Promise<boolean> {
+    return createSHA256(password, salt) === hash;
   }
 }

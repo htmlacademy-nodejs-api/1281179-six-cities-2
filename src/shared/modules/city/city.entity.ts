@@ -1,13 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { Cities, City, Coords } from '../../types/index.js';
+import { Types } from 'mongoose';
 
-export interface CityEntity extends defaultClasses.Base {}
 @modelOptions({ schemaOptions: { collection: 'cities', timestamps: true } })
 export class CityEntity extends defaultClasses.TimeStamps implements City {
   @prop({
+    type: () => Types.ObjectId,
+    required: true,
+    default: () => new Types.ObjectId()
+  })
+  public _id: Types.ObjectId;
+
+  @prop({
     type: () => String,
-    requirid: true,
+    required: true,
     unique: true,
     enum: Cities,
   })
@@ -15,7 +21,7 @@ export class CityEntity extends defaultClasses.TimeStamps implements City {
 
   @prop({
     type: Object,
-    requirid: true,
+    required: true,
   })
   public coords: Coords;
 }

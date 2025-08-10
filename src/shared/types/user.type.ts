@@ -9,3 +9,14 @@ export type User = {
   photo?: string; // Аватар пользователя. Необязательное. Изображение пользователя в формате .jpg или .png;
   userType: UserType; // Тип пользователя. Обязательное. Возможные варианты: обычный, pro.
 }
+
+export type UserRequest = User & {
+  password: string;
+}
+
+export type UserResponse = {
+  id: string;
+  name: string;
+  email: string;
+  photo: string;
+}

@@ -8,4 +8,6 @@ export interface CityService {
   findCityByCityName(name: string): Promise<DocumentType<CityEntity> | null>;
   findCityByCityNameOrCreate(cityId: string, dto: CreateCityDto): Promise<DocumentType<CityEntity>>;
   findAllCities(): Promise<DocumentType<CityEntity>[]>;
+  deleteCityById(id: string): Promise<DocumentType<CityEntity> | null>;
+  deleteCityByName(name: string): Promise<DocumentType<CityEntity> | null>;
 }
