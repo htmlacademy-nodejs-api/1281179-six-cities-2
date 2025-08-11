@@ -23,7 +23,7 @@ Content-Type: application/json
   "guestCount": 4,
   "cost": 1200,
   "conveniences": ["Breakfast", "Air conditioning", "Towels"],
-  "author": "66a1b2c3d4e5f67890123457",
+  "author":  "68971610e3ca36a5a380444c",
   "coordinates": [48.8566, 2.3522]
 }
 

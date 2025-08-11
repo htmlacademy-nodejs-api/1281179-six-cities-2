@@ -91,6 +91,7 @@ export class OfferController extends BaseController {
 
     const offerDTO: CreateOfferDto = {
       ...rest,
+      author,
       city: existedCity._id,
     } as CreateOfferDto;
 
