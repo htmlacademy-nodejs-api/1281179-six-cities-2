@@ -41,7 +41,7 @@ export class DefaultCommentService implements CommentService {
    * @returns {Promise<types.DocumentType<CommentEntity>[]>} Массив комментариев
    */
   public async findByOfferId(offerId: string): Promise<types.DocumentType<CommentEntity>[]> {
-    return this.commentModel.find({ offerId }).populate('userId');
+    return this.commentModel.find({ offerId }).populate('authorId');
   }
 
   /**

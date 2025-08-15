@@ -1,0 +1,18 @@
+### Create comment
+### Получить комментарии к объявлению
+GET http://localhost:3000/offers/689636d15d0085a9db0e13ee/comments
+Accept: application/json
+
+###
+
+### Создать комментарий к объявлению
+POST http://localhost:3000/offers/689636d15d0085a9db0e13ee/comments
+Content-Type: application/json
+Accept: application/json
+
+{
+  "text": "Отличное предложение!",
+  "rating": 5,
+  "userId": "68971610e3ca36a5a380444c"
+}
+

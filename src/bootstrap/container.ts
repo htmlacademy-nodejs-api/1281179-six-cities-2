@@ -8,7 +8,7 @@ import { DatabaseClient, MongoDatabaseClient } from '../shared/libs/database-cli
 
 import { UserEntity, UserModel, UserService, DefaultUserService } from '../shared/modules/user/index.js';
 import { CityController, CityEntity, CityModel, CityService, DefaultCityService } from '../shared/modules/city/index.js';
-import { CommentEntity, CommentModel, CommentService, DefaultCommentService } from '../shared/modules/comment/index.js';
+import { CommentController, CommentEntity, CommentModel, CommentService, DefaultCommentService } from '../shared/modules/comment/index.js';
 import { AppExceptionFilter, Controller, ExceptionFilter } from '../shared/libs/rest/index.js';
 import { OfferController, OfferEntity, OfferModel, OfferService, DefaultOfferService } from '../shared/modules/offer/index.js';
 import { RestApplication } from '../apps/rest/index.js';
@@ -43,6 +43,7 @@ export function createContainer(): Container {
   container.bind<Controller>(Components.CityController).to(CityController).inSingletonScope();
   container.bind<Controller>(Components.OfferController).to(OfferController).inSingletonScope();
   container.bind<Controller>(Components.UserController).to(UserController).inSingletonScope();
+  container.bind<Controller>(Components.CommentController).to(CommentController).inSingletonScope();
 
   // Filters
   container.bind<ExceptionFilter>(Components.ExceptionFilter).to(AppExceptionFilter).inSingletonScope();

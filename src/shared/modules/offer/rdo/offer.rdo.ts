@@ -72,7 +72,7 @@ export class OfferRdo {
   @Expose()
   public conveniences: ConvenienceType[]; // Удобства. Обязательное. Список удобств. Один или несколько вариантов из списка: Breakfast, Air conditioning, Laptop friendly workspace, Baby seat, Washer, Towels, Fridge;
 
-  @Expose({ name: 'author' })
+  @Expose()
   @Type(() => UserRdo)
   public author: UserRdo; // Автор предложения. Обязательное. Ссылка на сущность «Пользователь»;
 
