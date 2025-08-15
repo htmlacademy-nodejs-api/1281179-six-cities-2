@@ -13,5 +13,5 @@ Content-Type: application/json
 }
 
 ### DELETE city by id
-DELETE http://localhost:3000/cities/6890dc2fb419257a04422288
+DELETE http://localhost:3000/cities/y
 ### DELETE city by name

@@ -12,6 +12,7 @@ import { UserService } from '../user/user-service.interface.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { fillDTO } from '../../helpers/common.js';
 import { CommentRdo } from './rdo/comment.rdo.js';
+import { ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
 
 @injectable()
 export class CommentController extends BaseController {
@@ -31,11 +32,13 @@ export class CommentController extends BaseController {
       path: '/:offerId/comments',
       method: HttpMethod.GET,
       handler: this.index,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
     this.addRoute({
       path: '/:offerId/comments',
       method: HttpMethod.POST,
       handler: this.create,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
   }
 
