@@ -20,7 +20,9 @@ export abstract class BaseController implements Controller {
   }
 
   addRoute(route: Route): void {
-    this._router[route.method](route.path, route.handler);
+    const middlewares = route.middlewares?.map((middleware) => middleware.execute.bind(middleware));
+    const allHandlers = middlewares ? [...middlewares, route.handler] : route.handler;
+    this._router[route.method](route.path, allHandlers);
     this.logger.info(`Route registered: ${route.method.toUpperCase()} ${route.path}`);
   }
 
