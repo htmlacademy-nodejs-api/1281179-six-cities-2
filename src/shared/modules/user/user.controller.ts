@@ -11,6 +11,7 @@ import { Config, RestSchema } from '../../libs/config/index.js';
 import { fillDTO } from '../../helpers/common.js';
 import { UserRdo } from './rdo/user.rdo.js';
 import { StatusCodes } from 'http-status-codes';
+import { ValidateDtoMiddleware } from '../../../apps/rest/middleware/validate-dto.middleware.js';
 
 @injectable()
 export class UserController extends BaseController {
@@ -26,7 +27,8 @@ export class UserController extends BaseController {
     this.addRoute({
       path: '/register',
       method: HttpMethod.POST,
-      handler: this.create
+      handler: this.create,
+      middlewares: [new ValidateDtoMiddleware(CreateUserDto)]
     });
     this.addRoute({
       path: '/',

@@ -10,7 +10,7 @@ import { CreateCityDto } from './dto/create-city.dto.js';
 import { CityRdo } from './rdo/city.rdo.js';
 import { fillDTO } from '../../helpers/common.js';
 import { Cities } from '../../types/cities.enum.js';
-import { ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
+import { ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
 
 @injectable()
 export class CityController extends BaseController {
@@ -31,6 +31,7 @@ export class CityController extends BaseController {
       path: '/',
       method: HttpMethod.POST,
       handler: this.create,
+      middlewares: [new ValidateDtoMiddleware(CreateCityDto)]
     });
     this.addRoute({
       path: '/:id',
