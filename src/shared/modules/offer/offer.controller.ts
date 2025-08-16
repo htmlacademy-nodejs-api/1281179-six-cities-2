@@ -13,6 +13,7 @@ import { Cities } from '../../types/cities.enum.js';
 import { UserService } from '../user/user-service.interface.js';
 import { HttpError } from '../../libs/rest/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
+import { ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
 
 @injectable()
 export class OfferController extends BaseController {
@@ -37,16 +38,19 @@ export class OfferController extends BaseController {
       path: '/:id',
       method: HttpMethod.GET,
       handler: this.show,
+      middlewares: [new ValidateObjectIdMiddleware('id')],
     });
     this.addRoute({
       path: '/',
       method: HttpMethod.POST,
       handler: this.create,
+      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)],
     });
     this.addRoute({
       path: '/:id',
       method: HttpMethod.PUT,
       handler: this.update,
+      middlewares: [new ValidateObjectIdMiddleware('id')],
     });
   }
 
@@ -91,6 +95,7 @@ export class OfferController extends BaseController {
 
     const offerDTO: CreateOfferDto = {
       ...rest,
+      author,
       city: existedCity._id,
     } as CreateOfferDto;
 

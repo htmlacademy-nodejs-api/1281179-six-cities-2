@@ -22,6 +22,8 @@ export class RestApplication {
     private readonly offerController: Controller,
     @inject(Components.UserController)
     private readonly userController: Controller,
+    @inject(Components.CommentController)
+    private readonly commentController: Controller,
     @inject(Components.ExceptionFilter)
     private readonly exceptionFilter: ExceptionFilter,
   ) {
@@ -48,6 +50,7 @@ export class RestApplication {
     this.server.use('/cities', this.cityController.router);
     this.server.use('/offers', this.offerController.router);
     this.server.use('/users', this.userController.router);
+    this.server.use('/offers', this.commentController.router);
   }
 
   private async _initServer(): Promise<void> {

@@ -1,7 +1,7 @@
-import { Expose, Transform } from 'class-transformer';
-import { User } from '../../../types/user.type.js';
+import { Expose, Transform, Type } from 'class-transformer';
 import { ConvenienceType } from '../../../types/conveniences.type.js';
 import { Property } from '../../../types/property.type.js';
+import { UserRdo } from '../../user/rdo/user.rdo.js';
 
 export class OfferRdo {
   @Expose()
@@ -73,7 +73,8 @@ export class OfferRdo {
   public conveniences: ConvenienceType[]; // Удобства. Обязательное. Список удобств. Один или несколько вариантов из списка: Breakfast, Air conditioning, Laptop friendly workspace, Baby seat, Washer, Towels, Fridge;
 
   @Expose()
-  public author: User; // Автор предложения. Обязательное. Ссылка на сущность «Пользователь»;
+  @Type(() => UserRdo)
+  public author: UserRdo; // Автор предложения. Обязательное. Ссылка на сущность «Пользователь»;
 
   @Expose()
   public commentCount: number; // Количество комментариев. Рассчитывается автоматически;
