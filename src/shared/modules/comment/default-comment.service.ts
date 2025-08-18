@@ -53,4 +53,33 @@ export class DefaultCommentService implements CommentService {
     const result = await this.commentModel.deleteMany({ offerId }).exec();
     return result.deletedCount;
   }
+
+  /**
+   * Обновляет комментарий по его идентификатору
+   * @param {string} commentId - ID комментария, который нужно обновить
+   * @param {CreateCommentDto} dto - Объект передачи данных с обновлённой информацией о комментарии
+   * @returns {Promise<types.DocumentType<CommentEntity> | null>} Обновлённый комментарий или null, если не найден
+   */
+  public async updateById(commentId: string, dto: CreateCommentDto): Promise<types.DocumentType<CommentEntity> | null> {
+    return this.commentModel.findByIdAndUpdate(commentId, dto, { new: true }).exec();
+  }
+
+  /**
+   * Удаляет комментарий по его идентификатору
+   * @param {string} commentId - ID комментария, который нужно удалить
+   * @returns {Promise<number>} Количество удаленных комментариев
+   */
+  public async deleteById(commentId: string): Promise<number> {
+    const result = await this.commentModel.deleteOne({ _id: commentId }).exec();
+    return result.deletedCount ?? 0;
+  }
+
+  /**
+   * Проверяет, существует ли комментарий по его идентификатору
+   * @param {string} documentId - ID комментария
+   * @returns {Promise<boolean>} true, если комментарий существует, false в противном случае
+   */
+  async exists(documentId: string): Promise<boolean> {
+    return (await this.commentModel.exists({ _id: documentId })) !== null;
+  }
 }
