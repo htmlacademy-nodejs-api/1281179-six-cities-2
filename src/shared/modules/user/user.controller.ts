@@ -11,7 +11,7 @@ import { Config, RestSchema } from '../../libs/config/index.js';
 import { fillDTO } from '../../helpers/common.js';
 import { UserRdo } from './rdo/user.rdo.js';
 import { StatusCodes } from 'http-status-codes';
-import { DocumentExistMiddleware, ValidateObjectIdMiddleware, ValidateDtoMiddleware } from '../../../apps/rest/index.js';
+import { DocumentExistMiddleware, ValidateObjectIdMiddleware, ValidateDtoMiddleware, UploadFileMiddleware } from '../../../apps/rest/index.js';
 
 @injectable()
 export class UserController extends BaseController {
@@ -65,6 +65,16 @@ export class UserController extends BaseController {
       middlewares: [
         new ValidateObjectIdMiddleware('id'),
         new DocumentExistMiddleware(this.userService, 'User', 'id')
+      ]
+    });
+    this.addRoute({
+      path: '/:id/upload',
+      method: HttpMethod.POST,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new DocumentExistMiddleware(this.userService, 'User', 'id'),
+        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar')
       ]
     });
   }
@@ -125,5 +135,9 @@ export class UserController extends BaseController {
     const { id } = req.params;
     await this.userService.deleteById(id);
     this.noContent(res, 'User deleted successfully');
+  };
+
+  public uploadAvatar = async (req: Request, res: Response): Promise<void> => {
+    this.created(res, { filepath: req.file?.path });
   };
 }
