@@ -68,7 +68,7 @@ export class UserController extends BaseController {
       ]
     });
     this.addRoute({
-      path: '/:id/upload',
+      path: '/:id/avatar',
       method: HttpMethod.POST,
       handler: this.uploadAvatar,
       middlewares: [
