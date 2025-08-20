@@ -6,3 +6,4 @@ export { City, Coords } from './city.type.js';
 export * from './user.type.js';
 export * from './mock.request.type.js';
 export { Components } from './components.enum.js';
+export type { DocumentExist } from './document-exist.interface.js';

@@ -1,12 +1,13 @@
 import { DocumentType } from '@typegoose/typegoose';
 import { CommentEntity } from './comment.entity.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
+import { DocumentExist } from '../../types/document-exist.interface.js';
 
 /**
  * Интерфейс для операций с комментариями
  * Предоставляет методы для создания, поиска и удаления комментариев
  */
-export interface CommentService {
+export interface CommentService extends DocumentExist {
   /**
    * Создает новый комментарий
    * @param dto - Объект передачи данных, содержащий информацию о комментарии
@@ -27,4 +28,19 @@ export interface CommentService {
    * @returns Promise, разрешающийся в количество удаленных комментариев
    */
   deleteByOfferId(offerId: string): Promise<number>;
+
+  /**
+   * Обновляет комментарий по его идентификатору
+   * @param commentId - ID комментария, который нужно обновить
+   * @param dto - Объект передачи данных с обновлённой информацией о комментарии
+   * @returns Promise, разрешающийся в обновлённый документ комментария или null, если не найден
+   */
+  updateById(commentId: string, dto: CreateCommentDto): Promise<DocumentType<CommentEntity> | null>;
+
+  /**
+   * Удаляет комментарий по его идентификатору
+   * @param commentId - ID комментария, который нужно удалить
+   * @returns Promise, разрешающийся в количество удаленных комментариев
+   */
+  deleteById(commentId: string): Promise<number>;
 }

@@ -13,7 +13,7 @@ import { Cities } from '../../types/cities.enum.js';
 import { UserService } from '../user/user-service.interface.js';
 import { HttpError } from '../../libs/rest/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
-import { ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
+import { DocumentExistMiddleware, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
 
 @injectable()
 export class OfferController extends BaseController {
@@ -38,19 +38,36 @@ export class OfferController extends BaseController {
       path: '/:id',
       method: HttpMethod.GET,
       handler: this.show,
-      middlewares: [new ValidateObjectIdMiddleware('id')],
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new DocumentExistMiddleware(this.offerService, 'Offer', 'id')
+      ],
     });
     this.addRoute({
       path: '/',
       method: HttpMethod.POST,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)],
+      middlewares: [
+        new ValidateDtoMiddleware(CreateOfferDto)
+      ],
     });
     this.addRoute({
       path: '/:id',
       method: HttpMethod.PUT,
       handler: this.update,
-      middlewares: [new ValidateObjectIdMiddleware('id')],
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new DocumentExistMiddleware(this.offerService, 'Offer', 'id')
+      ],
+    });
+    this.addRoute({
+      path: '/:id',
+      method: HttpMethod.DELETE,
+      handler: this.delete,
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new DocumentExistMiddleware(this.offerService, 'Offer', 'id')
+      ],
     });
   }
 
@@ -63,9 +80,7 @@ export class OfferController extends BaseController {
   public show = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const offer = await this.offerService.findByOfferId(id);
-    if (!offer) {
-      throw new HttpError(StatusCodes.NOT_FOUND, 'Offer not found', 'OfferController');
-    }
+
     const responseData = fillDTO(OfferRdo, offer);
     this.ok(res, responseData);
   };
@@ -109,5 +124,11 @@ export class OfferController extends BaseController {
     const offer = await this.offerService.updateById(id, req.body);
     const responseData = fillDTO(OfferRdo, offer);
     this.ok(res, responseData);
+  };
+
+  public delete = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    await this.offerService.deleteById(id);
+    this.noContent(res, 'Offer deleted successfully');
   };
 }

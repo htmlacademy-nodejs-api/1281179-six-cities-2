@@ -12,7 +12,7 @@ import { UserService } from '../user/user-service.interface.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { fillDTO } from '../../helpers/common.js';
 import { CommentRdo } from './rdo/comment.rdo.js';
-import { ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
+import { DocumentExistMiddleware, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
 
 @injectable()
 export class CommentController extends BaseController {
@@ -38,7 +38,33 @@ export class CommentController extends BaseController {
       path: '/:offerId/comments',
       method: HttpMethod.POST,
       handler: this.create,
-      middlewares: [new ValidateObjectIdMiddleware('offerId'), new ValidateDtoMiddleware(CreateCommentDto)],
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateDtoMiddleware(CreateCommentDto),
+        new DocumentExistMiddleware(this.offerService, 'Offer', 'offerId')
+      ],
+    });
+    this.addRoute({
+      path: '/:offerId/comments/:commentId',
+      method: HttpMethod.DELETE,
+      handler: this.delete,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateObjectIdMiddleware('commentId'),
+        new DocumentExistMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentExistMiddleware(this.commentService, 'Comment', 'commentId')
+      ]
+    });
+    this.addRoute({
+      path: '/:offerId/comments/:commentId',
+      method: HttpMethod.PUT,
+      handler: this.update,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateObjectIdMiddleware('commentId'),
+        new DocumentExistMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentExistMiddleware(this.commentService, 'Comment', 'commentId')
+      ]
     });
   }
 
@@ -87,6 +113,19 @@ export class CommentController extends BaseController {
 
     const created = await this.commentService.create(dto);
     this.created(res, created);
+  };
+
+  public delete = async (req: Request, res: Response): Promise<void> => {
+    const { commentId } = req.params;
+    await this.commentService.deleteById(commentId);
+    this.noContent(res, 'Comment deleted successfully');
+  };
+
+  public update = async (req: Request, res: Response): Promise<void> => {
+    const { commentId } = req.params;
+    const commentDTO: CreateCommentDto = req.body;
+    const comment = await this.commentService.updateById(commentId, commentDTO);
+    this.ok(res, fillDTO(CommentRdo, comment));
   };
 }
 

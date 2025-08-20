@@ -26,3 +26,6 @@ GET http://localhost:3123/propertyTypes
 GET http://localhost:3123/conveniences
 
 ###
+
+### GET image
+GET http://localhost:3000/upload/amsterdam.jpg
