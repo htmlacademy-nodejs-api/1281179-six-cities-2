@@ -3,7 +3,7 @@ import { BaseController } from '../../libs/rest/controller/base-controller.abstr
 import { Logger } from '../../libs/logger/logger.interface.js';
 import { Components } from '../../types/components.enum.js';
 import { HttpError, HttpMethod } from '../../libs/rest/index.js';
-import { RequestHandler } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import { UserRequest, UserResponse } from '../../types/user.type.js';
 import { UserService } from './user-service.interface.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
@@ -11,7 +11,7 @@ import { Config, RestSchema } from '../../libs/config/index.js';
 import { fillDTO } from '../../helpers/common.js';
 import { UserRdo } from './rdo/user.rdo.js';
 import { StatusCodes } from 'http-status-codes';
-import { ValidateDtoMiddleware } from '../../../apps/rest/middleware/validate-dto.middleware.js';
+import { DocumentExistMiddleware, ValidateObjectIdMiddleware, ValidateDtoMiddleware, UploadFileMiddleware } from '../../../apps/rest/index.js';
 
 @injectable()
 export class UserController extends BaseController {
@@ -39,6 +39,43 @@ export class UserController extends BaseController {
       path: '/login',
       method: HttpMethod.POST,
       handler: this.login
+    });
+    this.addRoute({
+      path: '/:id',
+      method: HttpMethod.GET,
+      handler: this.show,
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new DocumentExistMiddleware(this.userService, 'User', 'id')
+      ]
+    });
+    this.addRoute({
+      path: '/:id',
+      method: HttpMethod.DELETE,
+      handler: this.delete,
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new DocumentExistMiddleware(this.userService, 'User', 'id')
+      ]
+    });
+    this.addRoute({
+      path: '/:id',
+      method: HttpMethod.PUT,
+      handler: this.update,
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new DocumentExistMiddleware(this.userService, 'User', 'id')
+      ]
+    });
+    this.addRoute({
+      path: '/:id/avatar',
+      method: HttpMethod.POST,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new DocumentExistMiddleware(this.userService, 'User', 'id'),
+        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar')
+      ]
     });
   }
 
@@ -79,5 +116,28 @@ export class UserController extends BaseController {
     }
 
     this.ok(res, { token: '123456' });
+  };
+
+  public show = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const user = await this.userService.findUserById(id);
+    this.ok(res, fillDTO(UserRdo, user));
+  };
+
+  public update = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const userDTO: CreateUserDto = req.body;
+    const user = await this.userService.updateById(id, userDTO);
+    this.ok(res, fillDTO(UserRdo, user));
+  };
+
+  public delete = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    await this.userService.deleteById(id);
+    this.noContent(res, 'User deleted successfully');
+  };
+
+  public uploadAvatar = async (req: Request, res: Response): Promise<void> => {
+    this.created(res, { filepath: req.file?.path });
   };
 }

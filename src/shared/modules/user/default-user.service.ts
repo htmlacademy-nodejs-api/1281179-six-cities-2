@@ -49,4 +49,16 @@ export class DefaultUserService implements UserService {
   public async comparePassword(password: string, hash: string, salt: string): Promise<boolean> {
     return createSHA256(password, salt) === hash;
   }
+
+  public async deleteById(id: string): Promise<number> {
+    return this.userModel.deleteOne({ _id: id }).exec().then((result) => result.deletedCount ?? 0);
+  }
+
+  public async updateById(id: string, dto: CreateUserDto): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findByIdAndUpdate(id, dto, { new: true }).exec();
+  }
+
+  async exists(documentId: string): Promise<boolean> {
+    return (await this.userModel.exists({ _id: documentId })) !== null;
+  }
 }

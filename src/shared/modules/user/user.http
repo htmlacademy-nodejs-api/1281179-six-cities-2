@@ -12,11 +12,14 @@ Content-Type: application/json
   "password": "123456"
 }
 
-### Login user
-POST http://localhost:3000/users/login
-Content-Type: application/json
+### Загрузка аватара пользователя
+POST http://localhost:3000/users/68971e9a98abd0f6f9b6f1bc/avatar HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
-{
-  "email": "test1@test.com",
-  "password": "1234561"
-}
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="screen.png"
+Content-Type: image/png
+
+< /Users/d.korbut/WebstormProjects/study/node-rest/1281179-six-cities-2/markup/img/amsterdam.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+

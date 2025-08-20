@@ -52,4 +52,8 @@ export class DefaultCityService implements CityService {
   async deleteCityByName(name: string): Promise<DocumentType<CityEntity> | null> {
     return this.cityModel.findOneAndDelete({ name: name.toUpperCase() }).exec();
   }
+
+  async exists(documentId: string): Promise<boolean> {
+    return (await this.cityModel.exists({ _id: documentId })) !== null;
+  }
 }
