@@ -89,7 +89,6 @@ export class UserController extends BaseController {
 
   public create: RequestHandler<unknown, UserResponse, UserRequest> = async (req, res) => {
     const userDTO: CreateUserDto = req.body;
-
     const existingUser = await this.userService.findByEmail(userDTO.email);
     if (existingUser) {
       throw new HttpError(StatusCodes.CONFLICT, 'User already exists', 'UserController');

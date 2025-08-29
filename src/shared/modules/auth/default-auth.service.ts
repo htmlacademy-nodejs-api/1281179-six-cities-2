@@ -10,8 +10,6 @@ import { RestSchema } from '../../libs/config/rest.schema.js';
 import { UserEntity } from '../user/user.entity.js';
 import { SignJWT } from 'jose';
 import { LoginUserDto } from '../user/dto/login-user.dto.js';
-import { HttpError } from '../../libs/rest/index.js';
-import { StatusCodes } from 'http-status-codes';
 import { UserNotFoundException } from './errors/index.js';
 import { UserPasswordIncorrectException } from './errors/user-password-incorrect.exception.js';
 
@@ -30,7 +28,7 @@ export class DefaultAuthService implements AuthService {
     const jwtSecret = this.config.get('JWT_SECRET');
     const secretKey = crypto.createSecretKey(jwtSecret, 'utf-8');
     const tokenPayload: TokenPayload = {
-      id: user.id,
+      id: user._id.toString(),
       email: user.email,
       firstName: user.name.split(' ')[0],
       lastName: user.name.split(' ')[1],
