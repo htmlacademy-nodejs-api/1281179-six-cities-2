@@ -12,7 +12,8 @@ import { fillDTO } from '../../helpers/common.js';
 import { UserRdo } from './rdo/user.rdo.js';
 import { StatusCodes } from 'http-status-codes';
 import { DocumentExistMiddleware, ValidateObjectIdMiddleware, ValidateDtoMiddleware, UploadFileMiddleware } from '../../../apps/rest/index.js';
-
+import { AuthService } from '../auth/auth-service.interface.js';
+import { LoginUserRdo } from './rdo/login-user.rdo.js';
 @injectable()
 export class UserController extends BaseController {
   constructor(
@@ -22,6 +23,8 @@ export class UserController extends BaseController {
     protected readonly userService: UserService,
     @inject(Components.RestConfig)
     private readonly config: Config<RestSchema>,
+    @inject(Components.AuthService)
+    private readonly authService: AuthService,
   ) {
     super(logger);
     this.addRoute({
@@ -103,19 +106,11 @@ export class UserController extends BaseController {
   };
 
   public login: RequestHandler<unknown, UserResponse, UserRequest> = async (req, res) => {
-    const userDTO: CreateUserDto = req.body;
+    const user = await this.authService.verify(req.body);
+    const token = await this.authService.authenticate(user);
+    const responseData = fillDTO(LoginUserRdo, {email: user.email, token});
 
-    const existingUser = await this.userService.findByEmail(userDTO.email);
-    if (!existingUser) {
-      throw new HttpError(StatusCodes.NOT_FOUND, 'User not found', 'UserController');
-    }
-
-    const isPasswordCorrect = await this.userService.comparePassword(userDTO.password, existingUser.getPassword() ?? '', this.config.get('SALT'));
-    if (!isPasswordCorrect) {
-      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Invalid password', 'UserController');
-    }
-
-    this.ok(res, { token: '123456' });
+    this.ok(res, responseData);
   };
 
   public show = async (req: Request, res: Response): Promise<void> => {

@@ -14,6 +14,8 @@ import { OfferController, OfferEntity, OfferModel, OfferService, DefaultOfferSer
 import { RestApplication } from '../apps/rest/index.js';
 import { UserController } from '../shared/modules/user/user.controller.js';
 import { AuthExceptionFilter } from '../shared/modules/auth/auth-exception.filter.js';
+import { DefaultAuthService } from '../shared/modules/auth/default-auth.service.js';
+import { AuthService } from '../shared/modules/auth/auth-service.interface.js';
 
 export function createContainer(): Container {
   const container = new Container();
@@ -49,6 +51,9 @@ export function createContainer(): Container {
   // Filters
   container.bind<ExceptionFilter>(Components.ExceptionFilter).to(AppExceptionFilter).inSingletonScope();
   container.bind<ExceptionFilter>(Components.AuthExceptionFilter).to(AuthExceptionFilter).inSingletonScope();
+
+  // Auth
+  container.bind<AuthService>(Components.AuthService).to(DefaultAuthService).inSingletonScope();
 
   return container;
 }
