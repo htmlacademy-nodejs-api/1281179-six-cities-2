@@ -13,6 +13,7 @@ import { AppExceptionFilter, Controller, ExceptionFilter } from '../shared/libs/
 import { OfferController, OfferEntity, OfferModel, OfferService, DefaultOfferService } from '../shared/modules/offer/index.js';
 import { RestApplication } from '../apps/rest/index.js';
 import { UserController } from '../shared/modules/user/user.controller.js';
+import { AuthExceptionFilter } from '../shared/modules/auth/auth-exception.filter.js';
 
 export function createContainer(): Container {
   const container = new Container();
@@ -47,6 +48,7 @@ export function createContainer(): Container {
 
   // Filters
   container.bind<ExceptionFilter>(Components.ExceptionFilter).to(AppExceptionFilter).inSingletonScope();
+  container.bind<ExceptionFilter>(Components.AuthExceptionFilter).to(AuthExceptionFilter).inSingletonScope();
 
   return container;
 }
