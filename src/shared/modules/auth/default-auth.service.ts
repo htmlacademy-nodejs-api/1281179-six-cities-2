@@ -12,6 +12,8 @@ import { SignJWT } from 'jose';
 import { LoginUserDto } from '../user/dto/login-user.dto.js';
 import { HttpError } from '../../libs/rest/index.js';
 import { StatusCodes } from 'http-status-codes';
+import { UserNotFoundException } from './errors/index.js';
+import { UserPasswordIncorrectException } from './errors/user-password-incorrect.exception.js';
 
 @injectable()
 export class DefaultAuthService implements AuthService {
@@ -47,11 +49,11 @@ export class DefaultAuthService implements AuthService {
   public async verify(dto: LoginUserDto): Promise<UserEntity> {
     const user = await this.userService.findByEmail(dto.email);
     if (!user) {
-      throw new HttpError(StatusCodes.UNAUTHORIZED, 'User not found');
+      throw new UserNotFoundException();
     }
     const isPasswordValid = await user.verifyPassword(dto.password, this.config.get('SALT'));
     if (!isPasswordValid) {
-      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Invalid password');
+      throw new UserPasswordIncorrectException();
     }
 
     return user;
