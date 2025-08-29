@@ -12,6 +12,8 @@ export type RestSchema = {
   UPLOAD_DIRECTORY: string;
   JWT_SECRET: string;
   JWT_REFRESH_SECRET: string;
+  JWT_EXPIRES_IN: string;
+  JWT_ALGORITHM: string;
 }
 
 convict.addFormats(validator);
@@ -76,5 +78,17 @@ export const configRestSchema = convict<RestSchema>({
     format: String,
     env: 'JWT_REFRESH_SECRET',
     default: null
+  },
+  JWT_EXPIRES_IN: {
+    doc: 'Expiration time for JWT',
+    format: String,
+    env: 'JWT_EXPIRES_IN',
+    default: '40s'
+  },
+  JWT_ALGORITHM: {
+    doc: 'Algorithm for JWT',
+    format: String,
+    env: 'JWT_ALGORITHM',
+    default: 'HS256'
   }
 });
