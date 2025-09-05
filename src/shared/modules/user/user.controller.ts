@@ -15,6 +15,7 @@ import { DocumentExistMiddleware, ValidateObjectIdMiddleware, ValidateDtoMiddlew
 import { AuthService } from '../auth/auth-service.interface.js';
 import { LoginUserRdo } from './rdo/login-user.rdo.js';
 import { PrivateRouteMiddleware } from '../../../apps/rest/middleware/private-route.middleware.js';
+import { LoginUserDto } from './dto/login-user.dto.js';
 @injectable()
 export class UserController extends BaseController {
   constructor(
@@ -109,12 +110,17 @@ export class UserController extends BaseController {
     this.created(res, userEntity);
   };
 
-  public login: RequestHandler<unknown, UserResponse, UserRequest> = async (req, res) => {
-    const user = await this.authService.verify(req.body);
-    const token = await this.authService.authenticate(user);
-    const responseData = fillDTO(LoginUserRdo, {email: user.email, token});
+  public login = async ({tokenPayload}: Request, res: Response): Promise<void> => {
+    if (!tokenPayload) {
+      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Token is required', 'UserController');
+    }
+    const { email } = tokenPayload;
+    const foundUser = await this.userService.findByEmail(email);
+    if (!foundUser) {
+      throw new HttpError(StatusCodes.UNAUTHORIZED, 'User not found', 'UserController');
+    }
 
-    this.ok(res, responseData);
+    this.ok(res, fillDTO(LoginUserRdo, foundUser));
   };
 
   public show = async (req: Request, res: Response): Promise<void> => {
