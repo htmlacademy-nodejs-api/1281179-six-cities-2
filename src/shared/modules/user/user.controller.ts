@@ -14,6 +14,7 @@ import { StatusCodes } from 'http-status-codes';
 import { DocumentExistMiddleware, ValidateObjectIdMiddleware, ValidateDtoMiddleware, UploadFileMiddleware } from '../../../apps/rest/index.js';
 import { AuthService } from '../auth/auth-service.interface.js';
 import { LoginUserRdo } from './rdo/login-user.rdo.js';
+import { PrivateRouteMiddleware } from '../../../apps/rest/middleware/private-route.middleware.js';
 @injectable()
 export class UserController extends BaseController {
   constructor(
@@ -36,7 +37,8 @@ export class UserController extends BaseController {
     this.addRoute({
       path: '/',
       method: HttpMethod.GET,
-      handler: this.index
+      handler: this.index,
+      middlewares: [new PrivateRouteMiddleware()]
     });
     this.addRoute({
       path: '/login',
@@ -57,6 +59,7 @@ export class UserController extends BaseController {
       method: HttpMethod.DELETE,
       handler: this.delete,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('id'),
         new DocumentExistMiddleware(this.userService, 'User', 'id')
       ]
@@ -66,6 +69,7 @@ export class UserController extends BaseController {
       method: HttpMethod.PUT,
       handler: this.update,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('id'),
         new DocumentExistMiddleware(this.userService, 'User', 'id')
       ]
@@ -75,6 +79,7 @@ export class UserController extends BaseController {
       method: HttpMethod.POST,
       handler: this.uploadAvatar,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('id'),
         new DocumentExistMiddleware(this.userService, 'User', 'id'),
         new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar')

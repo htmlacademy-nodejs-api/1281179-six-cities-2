@@ -14,6 +14,8 @@ import { UserService } from '../user/user-service.interface.js';
 import { HttpError } from '../../libs/rest/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import { DocumentExistMiddleware, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
+import { PrivateRouteMiddleware } from '../../../apps/rest/middleware/private-route.middleware.js';
+import { UpdateOfferDto } from './dto/update-offer.dto.js';
 
 @injectable()
 export class OfferController extends BaseController {
@@ -48,6 +50,7 @@ export class OfferController extends BaseController {
       method: HttpMethod.POST,
       handler: this.create,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateDtoMiddleware(CreateOfferDto)
       ],
     });
@@ -56,6 +59,7 @@ export class OfferController extends BaseController {
       method: HttpMethod.PUT,
       handler: this.update,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('id'),
         new DocumentExistMiddleware(this.offerService, 'Offer', 'id')
       ],
@@ -65,6 +69,7 @@ export class OfferController extends BaseController {
       method: HttpMethod.DELETE,
       handler: this.delete,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('id'),
         new DocumentExistMiddleware(this.offerService, 'Offer', 'id')
       ],
@@ -86,7 +91,7 @@ export class OfferController extends BaseController {
   };
 
   public create = async (req: Request, res: Response): Promise<void> => {
-    const { city, author, ...rest } = req.body ?? {};
+    const { city, ...rest } = req.body ?? {};
 
     if (!city) {
       throw new HttpError(StatusCodes.BAD_REQUEST, 'City name is required in field "city"', 'OfferController');
@@ -103,14 +108,19 @@ export class OfferController extends BaseController {
       throw new HttpError(StatusCodes.BAD_REQUEST, `City with name "${city}" not found`, 'OfferController');
     }
 
-    const existedUser = await this.userService.findUserById(author);
+    const authorId = req.tokenPayload?.id;
+    if (!authorId) {
+      throw new HttpError(StatusCodes.BAD_REQUEST, 'Field "userId" is required', 'CommentController');
+    }
+
+    const existedUser = await this.userService.findUserById(authorId);
     if (!existedUser) {
-      throw new HttpError(StatusCodes.BAD_REQUEST, `User with id "${author}" not found`, 'OfferController');
+      throw new HttpError(StatusCodes.BAD_REQUEST, `User with id "${authorId}" not found`, 'OfferController');
     }
 
     const offerDTO: CreateOfferDto = {
       ...rest,
-      author,
+      author: authorId,
       city: existedCity._id,
     } as CreateOfferDto;
 
@@ -121,7 +131,21 @@ export class OfferController extends BaseController {
 
   public update = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const offer = await this.offerService.updateById(id, req.body);
+    const authorId = req.tokenPayload?.id;
+    if (!authorId) {
+      throw new HttpError(StatusCodes.BAD_REQUEST, 'Field "userId" is required', 'CommentController');
+    }
+
+    const existedUser = await this.userService.findUserById(authorId);
+    if (!existedUser) {
+      throw new HttpError(StatusCodes.BAD_REQUEST, `User with id "${authorId}" not found`, 'OfferController');
+    }
+
+    const offerDTO: UpdateOfferDto = {
+      author: authorId,
+      ...req.body,
+    } as UpdateOfferDto;
+    const offer = await this.offerService.updateById(id, offerDTO);
     const responseData = fillDTO(OfferRdo, offer);
     this.ok(res, responseData);
   };

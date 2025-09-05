@@ -13,6 +13,7 @@ import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { fillDTO } from '../../helpers/common.js';
 import { CommentRdo } from './rdo/comment.rdo.js';
 import { DocumentExistMiddleware, ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
+import { PrivateRouteMiddleware } from '../../../apps/rest/middleware/private-route.middleware.js';
 
 @injectable()
 export class CommentController extends BaseController {
@@ -39,6 +40,7 @@ export class CommentController extends BaseController {
       method: HttpMethod.POST,
       handler: this.create,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistMiddleware(this.offerService, 'Offer', 'offerId')
       ],
@@ -48,6 +50,7 @@ export class CommentController extends BaseController {
       method: HttpMethod.DELETE,
       handler: this.delete,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateObjectIdMiddleware('commentId'),
         new DocumentExistMiddleware(this.offerService, 'Offer', 'offerId'),
@@ -59,6 +62,7 @@ export class CommentController extends BaseController {
       method: HttpMethod.PUT,
       handler: this.update,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateObjectIdMiddleware('commentId'),
         new DocumentExistMiddleware(this.offerService, 'Offer', 'offerId'),
