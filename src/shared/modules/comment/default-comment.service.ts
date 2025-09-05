@@ -32,7 +32,7 @@ export class DefaultCommentService implements CommentService {
     const comment = await this.commentModel.create(dto);
     await this.offerService.incrementCommentCount(dto.offerId);
     this.logger.info(`New comment created: ${comment.text}`);
-    return comment;
+    return comment.populate('authorId');
   }
 
   /**

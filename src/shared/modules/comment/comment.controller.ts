@@ -12,7 +12,7 @@ import { UserService } from '../user/user-service.interface.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { fillDTO } from '../../helpers/common.js';
 import { CommentRdo } from './rdo/comment.rdo.js';
-import { DocumentExistMiddleware, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
+import { DocumentExistMiddleware, ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
 
 @injectable()
 export class CommentController extends BaseController {
@@ -40,7 +40,6 @@ export class CommentController extends BaseController {
       handler: this.create,
       middlewares: [
         new ValidateObjectIdMiddleware('offerId'),
-        new ValidateDtoMiddleware(CreateCommentDto),
         new DocumentExistMiddleware(this.offerService, 'Offer', 'offerId')
       ],
     });
@@ -83,7 +82,7 @@ export class CommentController extends BaseController {
 
   public create = async (req: Request, res: Response): Promise<void> => {
     const { offerId } = req.params;
-    const { text, userId } = req.body ?? {};
+    const { text } = req.body ?? {};
 
     if (!text) {
       throw new HttpError(StatusCodes.BAD_REQUEST, 'Field "text" is required', 'CommentController');
@@ -94,25 +93,24 @@ export class CommentController extends BaseController {
       throw new HttpError(StatusCodes.NOT_FOUND, 'Offer not found', 'CommentController');
     }
 
-    // TODO: после добавления авторизации использовать id авторизованного пользователя
-    if (!userId) {
+    const authorId = req.tokenPayload?.id;
+    if (!authorId) {
       throw new HttpError(StatusCodes.BAD_REQUEST, 'Field "userId" is required', 'CommentController');
     }
 
-    const user = await this.userService.findUserById(userId);
+    const user = await this.userService.findUserById(authorId);
     if (!user) {
-      throw new HttpError(StatusCodes.BAD_REQUEST, `User with id "${userId}" not found`, 'CommentController');
+      throw new HttpError(StatusCodes.BAD_REQUEST, `User with id "${authorId}" not found`, 'CommentController');
     }
 
     const dto: CreateCommentDto = {
       text,
       offerId,
-      authorId: userId,
-      userId, // временно дублируем до внедрения авторизации
+      authorId,
     } as unknown as CreateCommentDto;
 
     const created = await this.commentService.create(dto);
-    this.created(res, created);
+    this.created(res, fillDTO(CommentRdo, created));
   };
 
   public delete = async (req: Request, res: Response): Promise<void> => {

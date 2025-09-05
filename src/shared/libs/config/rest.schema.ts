@@ -83,7 +83,7 @@ export const configRestSchema = convict<RestSchema>({
     doc: 'Expiration time for JWT',
     format: String,
     env: 'JWT_EXPIRES_IN',
-    default: '40s'
+    default: '1h'
   },
   JWT_ALGORITHM: {
     doc: 'Algorithm for JWT',

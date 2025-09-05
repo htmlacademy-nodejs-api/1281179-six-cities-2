@@ -7,7 +7,7 @@ import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../../../shared/libs/rest/index.js';
 
 function isTokenPayload(payload: unknown): payload is TokenPayload {
-  return typeof payload === 'object' && payload !== null && 'id' in payload && 'email' in payload && 'firstName' in payload && 'lastName' in payload && typeof payload.id === 'string' && typeof payload.email === 'string' && typeof payload.firstName === 'string' && typeof payload.lastName === 'string';
+  return typeof payload === 'object' && payload !== null && 'id' in payload && 'email' in payload && 'firstName' in payload && typeof payload.id === 'string' && typeof payload.email === 'string' && typeof payload.firstName === 'string';
 }
 
 export class ParseTokenMiddleware implements Middleware {

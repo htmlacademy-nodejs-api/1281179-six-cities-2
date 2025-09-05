@@ -9,10 +9,10 @@ Accept: application/json
 POST http://localhost:3000/offers/689636d15d0085a9db0e13ee/comments
 Content-Type: application/json
 Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY4OTcxZTlhOThhYmQwZjZmOWI2ZjFiYyIsImVtYWlsIjoidGVzdDFAdGVzdC5jb20iLCJmaXJzdE5hbWUiOiJ0ZXN0IiwiaWF0IjoxNzU3MDg4MTI5LCJleHAiOjE3NTcwOTE3Mjl9.IL6c3rGs4lkirDb5K8xLyQ4e1y5lLiE1ZKg0bTDT9ec
 
 {
-  "text": "Отличное предложение!",
-  "rating": 5,
-  "userId": "68971610e3ca36a5a380444c"
+  "text": "Отличное предложение!Отличное предложение!Отличное предложение!Отличное предложение!Отличное предложение!",
+  "rating": 5
 }
 
