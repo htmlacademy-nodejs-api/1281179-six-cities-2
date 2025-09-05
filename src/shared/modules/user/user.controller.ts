@@ -12,10 +12,8 @@ import { fillDTO } from '../../helpers/common.js';
 import { UserRdo } from './rdo/user.rdo.js';
 import { StatusCodes } from 'http-status-codes';
 import { DocumentExistMiddleware, ValidateObjectIdMiddleware, ValidateDtoMiddleware, UploadFileMiddleware } from '../../../apps/rest/index.js';
-import { AuthService } from '../auth/auth-service.interface.js';
 import { LoginUserRdo } from './rdo/login-user.rdo.js';
 import { PrivateRouteMiddleware } from '../../../apps/rest/middleware/private-route.middleware.js';
-import { LoginUserDto } from './dto/login-user.dto.js';
 @injectable()
 export class UserController extends BaseController {
   constructor(
@@ -25,8 +23,7 @@ export class UserController extends BaseController {
     protected readonly userService: UserService,
     @inject(Components.RestConfig)
     private readonly config: Config<RestSchema>,
-    @inject(Components.AuthService)
-    private readonly authService: AuthService,
+
   ) {
     super(logger);
     this.addRoute({
