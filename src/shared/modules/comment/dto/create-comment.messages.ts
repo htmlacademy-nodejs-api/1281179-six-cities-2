@@ -5,9 +5,7 @@ export const CreateCommentMessages = {
   },
   offerId: {
     required: 'offerId is required',
-  },
-  userId: {
-    required: 'userId is required',
+    invalid: 'offerId is not a valid MongoDB ObjectId',
   },
   authorId: {
     required: 'authorId is required',

@@ -26,5 +26,5 @@ export class CommentRdo {
 
   @Expose({ name: 'authorId'})
   @Type(() => UserRdo)
-  public user!: UserRdo;
+  public user: UserRdo;
 }

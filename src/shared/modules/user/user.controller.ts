@@ -12,7 +12,8 @@ import { fillDTO } from '../../helpers/common.js';
 import { UserRdo } from './rdo/user.rdo.js';
 import { StatusCodes } from 'http-status-codes';
 import { DocumentExistMiddleware, ValidateObjectIdMiddleware, ValidateDtoMiddleware, UploadFileMiddleware } from '../../../apps/rest/index.js';
-
+import { LoginUserRdo } from './rdo/login-user.rdo.js';
+import { PrivateRouteMiddleware } from '../../../apps/rest/middleware/private-route.middleware.js';
 @injectable()
 export class UserController extends BaseController {
   constructor(
@@ -22,6 +23,7 @@ export class UserController extends BaseController {
     protected readonly userService: UserService,
     @inject(Components.RestConfig)
     private readonly config: Config<RestSchema>,
+
   ) {
     super(logger);
     this.addRoute({
@@ -33,7 +35,8 @@ export class UserController extends BaseController {
     this.addRoute({
       path: '/',
       method: HttpMethod.GET,
-      handler: this.index
+      handler: this.index,
+      middlewares: [new PrivateRouteMiddleware()]
     });
     this.addRoute({
       path: '/login',
@@ -54,6 +57,7 @@ export class UserController extends BaseController {
       method: HttpMethod.DELETE,
       handler: this.delete,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('id'),
         new DocumentExistMiddleware(this.userService, 'User', 'id')
       ]
@@ -63,6 +67,7 @@ export class UserController extends BaseController {
       method: HttpMethod.PUT,
       handler: this.update,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('id'),
         new DocumentExistMiddleware(this.userService, 'User', 'id')
       ]
@@ -72,6 +77,7 @@ export class UserController extends BaseController {
       method: HttpMethod.POST,
       handler: this.uploadAvatar,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('id'),
         new DocumentExistMiddleware(this.userService, 'User', 'id'),
         new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar')
@@ -86,7 +92,6 @@ export class UserController extends BaseController {
 
   public create: RequestHandler<unknown, UserResponse, UserRequest> = async (req, res) => {
     const userDTO: CreateUserDto = req.body;
-
     const existingUser = await this.userService.findByEmail(userDTO.email);
     if (existingUser) {
       throw new HttpError(StatusCodes.CONFLICT, 'User already exists', 'UserController');
@@ -102,20 +107,17 @@ export class UserController extends BaseController {
     this.created(res, userEntity);
   };
 
-  public login: RequestHandler<unknown, UserResponse, UserRequest> = async (req, res) => {
-    const userDTO: CreateUserDto = req.body;
-
-    const existingUser = await this.userService.findByEmail(userDTO.email);
-    if (!existingUser) {
-      throw new HttpError(StatusCodes.NOT_FOUND, 'User not found', 'UserController');
+  public login = async ({tokenPayload}: Request, res: Response): Promise<void> => {
+    if (!tokenPayload) {
+      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Token is required', 'UserController');
+    }
+    const { email } = tokenPayload;
+    const foundUser = await this.userService.findByEmail(email);
+    if (!foundUser) {
+      throw new HttpError(StatusCodes.UNAUTHORIZED, 'User not found', 'UserController');
     }
 
-    const isPasswordCorrect = await this.userService.comparePassword(userDTO.password, existingUser.getPassword() ?? '', this.config.get('SALT'));
-    if (!isPasswordCorrect) {
-      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Invalid password', 'UserController');
-    }
-
-    this.ok(res, { token: '123456' });
+    this.ok(res, fillDTO(LoginUserRdo, foundUser));
   };
 
   public show = async (req: Request, res: Response): Promise<void> => {

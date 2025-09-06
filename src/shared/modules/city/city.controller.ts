@@ -11,6 +11,7 @@ import { CityRdo } from './rdo/city.rdo.js';
 import { fillDTO } from '../../helpers/common.js';
 import { Cities } from '../../types/cities.enum.js';
 import { DocumentExistMiddleware, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../../apps/rest/index.js';
+import { PrivateRouteMiddleware } from '../../../apps/rest/middleware/private-route.middleware.js';
 
 @injectable()
 export class CityController extends BaseController {
@@ -31,13 +32,14 @@ export class CityController extends BaseController {
       path: '/',
       method: HttpMethod.POST,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateCityDto)]
+      middlewares: [new PrivateRouteMiddleware(), new ValidateDtoMiddleware(CreateCityDto)]
     });
     this.addRoute({
       path: '/:id',
       method: HttpMethod.DELETE,
       handler: this.delete,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('id'),
         new DocumentExistMiddleware(this.cityService, 'City', 'id')
       ],

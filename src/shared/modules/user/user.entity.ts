@@ -2,13 +2,17 @@ import { defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose
 import { User, UserType } from '../../types/index.js';
 import { createSHA256 } from '../../helpers/index.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
-
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export interface UserEntity extends defaultClasses.Base {}
+import { Types } from 'mongoose';
 
 @modelOptions({ schemaOptions: { collection: 'users', timestamps: true } })
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class UserEntity extends defaultClasses.TimeStamps implements User {
+  @prop({
+    type: () => Types.ObjectId,
+    required: true,
+    default: () => new Types.ObjectId()
+  })
+  public _id: Types.ObjectId;
+
   @prop({ unique: true, required: true })
   public email: string;
 
@@ -38,6 +42,11 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
 
   public getPassword() {
     return this.password;
+  }
+
+  public verifyPassword(password: string, salt: string) {
+    const hashPassword = createSHA256(password, salt);
+    return hashPassword === this.password;
   }
 }
 
