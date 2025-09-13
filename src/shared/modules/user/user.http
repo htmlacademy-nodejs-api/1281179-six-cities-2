@@ -23,6 +23,7 @@ Content-Type: application/json
 
 ### Загрузка аватара пользователя
 POST http://localhost:3000/users/68971e9a98abd0f6f9b6f1bc/avatar HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY4OTcxZTlhOThhYmQwZjZmOWI2ZjFiYyIsImVtYWlsIjoidGVzdDFAdGVzdC5jb20iLCJmaXJzdE5hbWUiOiJ0ZXN0IiwiaWF0IjoxNzU3NzUwMDIxLCJleHAiOjE3NTc3NTM2MjF9.ecNNMVm31hhLM2HD_ud2vbU9dtQxzyXOMB7uMRE9IeA
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
