@@ -3,21 +3,22 @@ import { validate } from 'class-validator';
 import { Middleware } from './middleware.interface.js';
 import { NextFunction } from 'express';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
+import { ValidationError } from '../../../shared/libs/rest/index.js';
+import { reduceValidationErrors } from '../../../shared/helpers/reduceValidationErrors.js';
 
 export class ValidateDtoMiddleware implements Middleware {
   constructor(private readonly dto: ClassConstructor<object>) {}
 
   public async execute(
-    req: Request,
-    res: Response,
+    {body, path}: Request,
+    _res: Response,
     next: NextFunction
   ): Promise<void> {
-    const dtoInstance = plainToInstance(this.dto, req.body);
+    const dtoInstance = plainToInstance(this.dto, body);
     const errors = await validate(dtoInstance);
 
     if (errors.length > 0) {
-      res.sendStatus(StatusCodes.BAD_REQUEST).send(errors);
+      throw new ValidationError(`Validation error: ${path}`, reduceValidationErrors(errors));
     }
     return next();
   }

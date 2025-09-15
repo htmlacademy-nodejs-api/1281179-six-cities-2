@@ -4,3 +4,6 @@ export * from './controller/controller.interface.js';
 export * from './exception-filter/exception-filter.interface.js';
 export * from './exception-filter/app-exception.filter.js';
 export * from './errors/index.js';
+export * from './errors/validation.error.js';
+export * from './types/validation-error-field.type.js';
+export * from './types/application-error.enum.js';
