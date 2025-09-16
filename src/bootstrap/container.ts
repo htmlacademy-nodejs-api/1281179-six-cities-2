@@ -9,7 +9,7 @@ import { DatabaseClient, MongoDatabaseClient } from '../shared/libs/database-cli
 import { UserEntity, UserModel, UserService, DefaultUserService } from '../shared/modules/user/index.js';
 import { CityController, CityEntity, CityModel, CityService, DefaultCityService } from '../shared/modules/city/index.js';
 import { CommentController, CommentEntity, CommentModel, CommentService, DefaultCommentService } from '../shared/modules/comment/index.js';
-import { AppExceptionFilter, Controller, ExceptionFilter } from '../shared/libs/rest/index.js';
+import { AppExceptionFilter, Controller, ExceptionFilter, HttpErrorExceptionFilter } from '../shared/libs/rest/index.js';
 import { OfferController, OfferEntity, OfferModel, OfferService, DefaultOfferService } from '../shared/modules/offer/index.js';
 import { RestApplication } from '../apps/rest/index.js';
 import { UserController } from '../shared/modules/user/user.controller.js';
@@ -49,7 +49,8 @@ export function createContainer(): Container {
   container.bind<Controller>(Components.CommentController).to(CommentController).inSingletonScope();
 
   // Filters
-  container.bind<ExceptionFilter>(Components.ExceptionFilter).to(AppExceptionFilter).inSingletonScope();
+  container.bind<ExceptionFilter>(Components.HttpExceptionFilter).to(HttpErrorExceptionFilter).inSingletonScope();
+  container.bind<ExceptionFilter>(Components.AppExceptionFilter).to(AppExceptionFilter).inSingletonScope();
   container.bind<ExceptionFilter>(Components.AuthExceptionFilter).to(AuthExceptionFilter).inSingletonScope();
 
   // Auth
