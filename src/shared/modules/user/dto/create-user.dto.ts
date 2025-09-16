@@ -13,12 +13,6 @@ export class CreateUserDto {
   public name: string;
 
   @IsString({ message: CreateUserMessages.password.required })
-  @IsOptional()
-  @Length(6, 12, { message: CreateUserMessages.password.minLength })
-  @MaxLength(12, { message: CreateUserMessages.password.maxLength })
-  public photo?: string;
-
-  @IsString({ message: CreateUserMessages.password.required })
   @IsNotEmpty({ message: CreateUserMessages.password.required })
   @Length(6, 12, { message: CreateUserMessages.password.minLength })
   @MaxLength(12, { message: CreateUserMessages.password.maxLength })

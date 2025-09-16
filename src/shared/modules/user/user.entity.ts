@@ -1,7 +1,6 @@
 import { defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { User, UserType } from '../../types/index.js';
 import { createSHA256 } from '../../helpers/index.js';
-import { CreateUserDto } from './dto/create-user.dto.js';
 import { Types } from 'mongoose';
 
 @modelOptions({ schemaOptions: { collection: 'users', timestamps: true } })
@@ -28,7 +27,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   @prop({ required: false, default: UserType.DEFAULT, enum: UserType })
   public userType: UserType;
 
-  constructor(user: CreateUserDto) {
+  constructor(user: User) {
     super();
     this.email = user.email;
     this.name = user.name;
