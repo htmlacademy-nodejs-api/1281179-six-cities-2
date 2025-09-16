@@ -4,7 +4,7 @@ import { Middleware } from './middleware.interface.js';
 import { NextFunction } from 'express';
 import { Request, Response } from 'express';
 import { ValidationError } from '../../../shared/libs/rest/index.js';
-import { reduceValidationErrors } from '../../../shared/helpers/reduceValidationErrors.js';
+import { reduceValidationErrors } from '../../../shared/helpers/index.js';
 
 export class ValidateDtoMiddleware implements Middleware {
   constructor(private readonly dto: ClassConstructor<object>) {}
