@@ -15,6 +15,7 @@ export type RestSchema = {
   JWT_EXPIRES_IN: string;
   JWT_ALGORITHM: string;
   HOST: string;
+  STATIC_FILES_DIRECTORY: string;
 }
 
 convict.addFormats(validator);
@@ -97,5 +98,11 @@ export const configRestSchema = convict<RestSchema>({
     format: String,
     env: 'JWT_ALGORITHM',
     default: 'HS256'
-  }
+  },
+  STATIC_FILES_DIRECTORY: {
+    doc: 'Directory for static files',
+    format: String,
+    env: 'STATIC_FILES_DIRECTORY',
+    default: 'static'
+  },
 });
