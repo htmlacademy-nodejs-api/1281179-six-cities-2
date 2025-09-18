@@ -2,8 +2,8 @@ export function getMongoDBURI (
   username: string,
   password: string,
   host: string,
-  port: string,
-  databasename: string,
+  port: number,
+  databaseName: string,
 ) {
-  return `mongodb://${username}:${password}@${host}:${port}/${databasename}?authSource=admin`;
+  return `mongodb://${username}:${password}@${host}:${port}/${databaseName}?authSource=admin`;
 }

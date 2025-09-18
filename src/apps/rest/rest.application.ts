@@ -6,6 +6,7 @@ import { Components } from '../../shared/types/index.js';
 import express, { Express } from 'express';
 import { Controller, ExceptionFilter } from '../../shared/libs/rest/index.js';
 import { ParseTokenMiddleware } from './middleware/parse-token.middleware.js';
+import { getFullServerPath } from '../../shared/helpers/common.js';
 
 @injectable()
 export class RestApplication {
@@ -94,6 +95,6 @@ export class RestApplication {
     this.logger.info('Exception filters initialized');
 
     await this._initServer();
-    this.logger.info(`Server started on ${this.config.get('PORT')} port`);
+    this.logger.info(`Server started on ${getFullServerPath(this.config.get('HOST'), this.config.get('PORT'))}`);
   }
 }
