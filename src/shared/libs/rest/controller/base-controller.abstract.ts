@@ -3,11 +3,18 @@ import { Controller } from './controller.interface.js';
 import { Route } from '../types/route.interface.js';
 import { Logger } from '../../logger/index.js';
 import { StatusCodes } from 'http-status-codes';
+import { inject, injectable } from 'inversify';
+import { Components } from '../../../types/components.enum.js';
+import { PathTransformer } from '../transform/path.transformer.js';
 
 const DEFAULT_CONTENT_TYPE = 'application/json';
 
+@injectable()
 export abstract class BaseController implements Controller {
   private readonly _router: Router;
+
+  @inject(Components.PathTransformer)
+  private readonly pathTransformer: PathTransformer;
 
   constructor(
     protected readonly logger: Logger,
@@ -30,7 +37,7 @@ export abstract class BaseController implements Controller {
     res
       .type(contentType)
       .status(statusCode)
-      .json(data);
+      .json(this.pathTransformer.execute(data as Record<string, unknown>));
   }
 
   ok<T>(res: Response, data: T): void {
