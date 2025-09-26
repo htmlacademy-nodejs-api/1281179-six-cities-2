@@ -6,6 +6,9 @@ import { Components } from '../../shared/types/index.js';
 import express, { Express } from 'express';
 import { Controller, ExceptionFilter } from '../../shared/libs/rest/index.js';
 import { ParseTokenMiddleware } from './middleware/parse-token.middleware.js';
+import { getFullServerPath } from '../../shared/helpers/common.js';
+import { STATIC_FILES_ROUTE, STATIC_UPLOAD_ROUTE } from './rest.constants.js';
+import cors from 'cors';
 
 @injectable()
 export class RestApplication {
@@ -25,8 +28,12 @@ export class RestApplication {
     private readonly userController: Controller,
     @inject(Components.CommentController)
     private readonly commentController: Controller,
-    @inject(Components.ExceptionFilter)
-    private readonly exceptionFilter: ExceptionFilter,
+    @inject(Components.HttpExceptionFilter)
+    private readonly httpExceptionFilter: ExceptionFilter,
+    @inject(Components.ValidationExceptionFilter)
+    private readonly validationExceptionFilter: ExceptionFilter,
+    @inject(Components.AppExceptionFilter)
+    private readonly appExceptionFilter: ExceptionFilter,
     @inject(Components.AuthExceptionFilter)
     private readonly authExceptionFilter: ExceptionFilter,
   ) {
@@ -49,10 +56,15 @@ export class RestApplication {
     const authenticateMiddleware = new ParseTokenMiddleware(this.config.get('JWT_SECRET'));
     this.server.use(express.json());
     this.server.use(
-      '/upload',
+      STATIC_UPLOAD_ROUTE,
       express.static(this.config.get('UPLOAD_DIRECTORY'))
     );
+    this.server.use(
+      STATIC_FILES_ROUTE,
+      express.static(this.config.get('STATIC_FILES_DIRECTORY'))
+    );
     this.server.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
+    this.server.use(cors());
   }
 
   private async _initControllers(): Promise<void> {
@@ -69,7 +81,9 @@ export class RestApplication {
 
   private async _initExceptionFilters(): Promise<void> {
     this.server.use(this.authExceptionFilter.catch.bind(this.authExceptionFilter));
-    this.server.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+    this.server.use(this.validationExceptionFilter.catch.bind(this.validationExceptionFilter));
+    this.server.use(this.httpExceptionFilter.catch.bind(this.httpExceptionFilter));
+    this.server.use(this.appExceptionFilter.catch.bind(this.appExceptionFilter));
   }
 
   public async init() {
@@ -88,6 +102,6 @@ export class RestApplication {
     this.logger.info('Exception filters initialized');
 
     await this._initServer();
-    this.logger.info(`Server started on ${this.config.get('PORT')} port`);
+    this.logger.info(`Server started on ${getFullServerPath(this.config.get('HOST'), this.config.get('PORT'))}`);
   }
 }

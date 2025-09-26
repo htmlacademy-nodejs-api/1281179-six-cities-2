@@ -9,13 +9,14 @@ import { DatabaseClient, MongoDatabaseClient } from '../shared/libs/database-cli
 import { UserEntity, UserModel, UserService, DefaultUserService } from '../shared/modules/user/index.js';
 import { CityController, CityEntity, CityModel, CityService, DefaultCityService } from '../shared/modules/city/index.js';
 import { CommentController, CommentEntity, CommentModel, CommentService, DefaultCommentService } from '../shared/modules/comment/index.js';
-import { AppExceptionFilter, Controller, ExceptionFilter } from '../shared/libs/rest/index.js';
+import { AppExceptionFilter, Controller, ExceptionFilter, HttpErrorExceptionFilter } from '../shared/libs/rest/index.js';
 import { OfferController, OfferEntity, OfferModel, OfferService, DefaultOfferService } from '../shared/modules/offer/index.js';
 import { RestApplication } from '../apps/rest/index.js';
 import { UserController } from '../shared/modules/user/user.controller.js';
 import { AuthExceptionFilter } from '../shared/modules/auth/auth-exception.filter.js';
 import { DefaultAuthService } from '../shared/modules/auth/default-auth.service.js';
 import { AuthService } from '../shared/modules/auth/auth-service.interface.js';
+import { PathTransformer } from '../shared/libs/rest/transform/path.transformer.js';
 
 export function createContainer(): Container {
   const container = new Container();
@@ -49,11 +50,15 @@ export function createContainer(): Container {
   container.bind<Controller>(Components.CommentController).to(CommentController).inSingletonScope();
 
   // Filters
-  container.bind<ExceptionFilter>(Components.ExceptionFilter).to(AppExceptionFilter).inSingletonScope();
+  container.bind<ExceptionFilter>(Components.HttpExceptionFilter).to(HttpErrorExceptionFilter).inSingletonScope();
+  container.bind<ExceptionFilter>(Components.AppExceptionFilter).to(AppExceptionFilter).inSingletonScope();
   container.bind<ExceptionFilter>(Components.AuthExceptionFilter).to(AuthExceptionFilter).inSingletonScope();
 
   // Auth
   container.bind<AuthService>(Components.AuthService).to(DefaultAuthService).inSingletonScope();
+
+  // Path Transformer
+  container.bind<PathTransformer>(Components.PathTransformer).to(PathTransformer).inSingletonScope();
 
   return container;
 }

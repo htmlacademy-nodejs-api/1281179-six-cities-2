@@ -2,27 +2,35 @@ import convict from 'convict';
 import validator from 'convict-format-with-validator';
 
 export type RestSchema = {
-  PORT: string;
+  PORT: number;
   SALT: string;
   DB_HOST: string;
   DB_USERNAME: string;
   DB_PASSWORD: string
-  DB_PORT: string;
+  DB_PORT: number;
   DB_NAME: string;
   UPLOAD_DIRECTORY: string;
   JWT_SECRET: string;
   JWT_REFRESH_SECRET: string;
   JWT_EXPIRES_IN: string;
   JWT_ALGORITHM: string;
+  HOST: string;
+  STATIC_FILES_DIRECTORY: string;
 }
 
 convict.addFormats(validator);
 
 export const configRestSchema = convict<RestSchema>({
+  HOST: {
+    doc: 'The host to bind.',
+    format: String,
+    env: 'HOST',
+    default: 'localhost',
+  },
   PORT: {
     doc: 'The port to bind.',
     format: 'port',
-    default: '3000',
+    default: 3000,
     env: 'PORT',
   },
   SALT: {
@@ -53,7 +61,7 @@ export const configRestSchema = convict<RestSchema>({
     doc: 'Port for connecting to the database',
     format: 'port',
     env: 'DB_PORT',
-    default: '27017'
+    default: 27017
   },
   DB_NAME: {
     doc: 'Database name',
@@ -90,5 +98,11 @@ export const configRestSchema = convict<RestSchema>({
     format: String,
     env: 'JWT_ALGORITHM',
     default: 'HS256'
-  }
+  },
+  STATIC_FILES_DIRECTORY: {
+    doc: 'Directory for static files',
+    format: String,
+    env: 'STATIC_FILES_DIRECTORY',
+    default: 'static'
+  },
 });

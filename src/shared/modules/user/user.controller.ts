@@ -14,6 +14,8 @@ import { StatusCodes } from 'http-status-codes';
 import { DocumentExistMiddleware, ValidateObjectIdMiddleware, ValidateDtoMiddleware, UploadFileMiddleware } from '../../../apps/rest/index.js';
 import { LoginUserRdo } from './rdo/login-user.rdo.js';
 import { PrivateRouteMiddleware } from '../../../apps/rest/middleware/private-route.middleware.js';
+import { AuthService } from '../auth/auth-service.interface.js';
+import { UploadUserAvatarRdo } from './rdo/upload-user-avatar.rdo.js';
 @injectable()
 export class UserController extends BaseController {
   constructor(
@@ -23,7 +25,8 @@ export class UserController extends BaseController {
     protected readonly userService: UserService,
     @inject(Components.RestConfig)
     private readonly config: Config<RestSchema>,
-
+    @inject(Components.AuthService)
+    private readonly authService: AuthService,
   ) {
     super(logger);
     this.addRoute({
@@ -107,17 +110,11 @@ export class UserController extends BaseController {
     this.created(res, userEntity);
   };
 
-  public login = async ({tokenPayload}: Request, res: Response): Promise<void> => {
-    if (!tokenPayload) {
-      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Token is required', 'UserController');
-    }
-    const { email } = tokenPayload;
-    const foundUser = await this.userService.findByEmail(email);
-    if (!foundUser) {
-      throw new HttpError(StatusCodes.UNAUTHORIZED, 'User not found', 'UserController');
-    }
-
-    this.ok(res, fillDTO(LoginUserRdo, foundUser));
+  public login = async ({body}: Request, res: Response): Promise<void> => {
+    const user = await this.authService.verify(body);
+    const token = await this.authService.authenticate(user);
+    const responseData = fillDTO(LoginUserRdo, user);
+    this.ok(res, Object.assign(responseData, { token }));
   };
 
   public show = async (req: Request, res: Response): Promise<void> => {
@@ -139,7 +136,10 @@ export class UserController extends BaseController {
     this.noContent(res, 'User deleted successfully');
   };
 
-  public uploadAvatar = async (req: Request, res: Response): Promise<void> => {
-    this.created(res, { filepath: req.file?.path });
+  public uploadAvatar = async ({params, file}: Request, res: Response): Promise<void> => {
+    const { id } = params;
+    const uploadFile = { avatarPath: file?.path };
+    await this.userService.updateById(id, uploadFile);
+    this.created(res, fillDTO(UploadUserAvatarRdo, {filepath: file?.path}));
   };
 }
