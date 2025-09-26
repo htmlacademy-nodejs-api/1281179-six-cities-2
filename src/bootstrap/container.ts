@@ -16,6 +16,7 @@ import { UserController } from '../shared/modules/user/user.controller.js';
 import { AuthExceptionFilter } from '../shared/modules/auth/auth-exception.filter.js';
 import { DefaultAuthService } from '../shared/modules/auth/default-auth.service.js';
 import { AuthService } from '../shared/modules/auth/auth-service.interface.js';
+import { PathTransformer } from '../shared/libs/rest/transform/path.transformer.js';
 
 export function createContainer(): Container {
   const container = new Container();
@@ -55,6 +56,9 @@ export function createContainer(): Container {
 
   // Auth
   container.bind<AuthService>(Components.AuthService).to(DefaultAuthService).inSingletonScope();
+
+  // Path Transformer
+  container.bind<PathTransformer>(Components.PathTransformer).to(PathTransformer).inSingletonScope();
 
   return container;
 }
